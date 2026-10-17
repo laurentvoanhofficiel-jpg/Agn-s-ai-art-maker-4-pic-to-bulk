@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Egon Multi-Ref Lab v4 — Garde-robe</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;background:#1a0f0a;color:#e8dcc8;min-height:100vh;padding:1rem 1rem 14rem;font-size:14px;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto}
+header{text-align:center;padding:1.5rem 0;border-bottom:1px solid #3d2418;margin-bottom:1.5rem}
+h1{font-family:Georgia,serif;font-size:2.4rem;font-weight:300;letter-spacing:.02em;margin-bottom:.4rem;background:linear-gradient(135deg,#c44536 0%,#e87b35 25%,#e5c15a 50%,#a88b4a 75%,#8b5a2b 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1.05}
+.sub{font-family:Georgia,serif;font-style:italic;font-size:.85rem;color:#8a7a5c}
+.kata{font-size:.7rem;letter-spacing:.4em;color:#e5c15a;opacity:.75;text-transform:uppercase;margin-bottom:.5rem}
+.banner{background:linear-gradient(135deg,rgba(196,69,54,.08),rgba(139,90,43,.06));border:1px solid #3d2418;border-left:3px solid #c44536;border-radius:4px;padding:1rem 1.15rem;font-size:.78rem;color:#a89578;margin-bottom:1.2rem;line-height:1.65;font-family:Georgia,serif}
+.banner strong{color:#e8dcc8}
+.card{background:#231409;border:1px solid #3d2418;border-radius:4px;margin-bottom:1rem;overflow:hidden}
+.card-head{padding:.85rem 1rem;border-bottom:1px solid #3d2418;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;text-transform:uppercase;letter-spacing:.15em;color:#d4c5a8;font-weight:600;font-family:Georgia,serif}
+.card-head .badge{font-size:.6rem;padding:.15rem .5rem;border:1px solid #8b5a2b;color:#e5c15a;border-radius:2px;letter-spacing:.1em;background:rgba(139,90,43,.15)}
+.card-body{padding:1rem}
+textarea{width:100%;background:#150c06;border:1px solid #3d2418;border-radius:4px;padding:.7rem .85rem;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:.78rem;color:#e8dcc8;outline:none;min-height:80px;resize:vertical;line-height:1.55}
+textarea:focus{border-color:#c44536;box-shadow:0 0 0 3px rgba(196,69,54,.15)}
+.btn{width:100%;padding:.75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .15s;font-family:Georgia,serif}
+.btn-amber{background:linear-gradient(135deg,rgba(232,123,53,.18),rgba(229,193,90,.1));border-color:#8b5a2b;color:#e5c15a}
+.btn-amber:hover:not(:disabled){background:rgba(232,123,53,.28)}
+.btn-amber:disabled{opacity:.3;cursor:not-allowed}
+.btn-slate{background:transparent;border-color:#3d2418;color:#a89578;font-size:.66rem;padding:.5rem;font-family:-apple-system,sans-serif}
+.btn-slate:hover:not(:disabled){color:#e87b35;border-color:#8b5a2b}
+.btn-slate:disabled{opacity:.3;cursor:not-allowed}
+.btn-mega{background:linear-gradient(135deg,#c44536,#8b5a2b,#e5c15a);border:none;color:#1a0f0a;padding:1rem;font-size:.85rem;letter-spacing:.18em;border-radius:5px;box-shadow:0 4px 20px rgba(196,69,54,.3);font-family:Georgia,serif;font-weight:700}
+.btn-mega:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 28px rgba(196,69,54,.5)}
+.btn-mega:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-success{background:linear-gradient(135deg,rgba(16,185,129,.25),rgba(52,211,153,.15));border:1px solid #065f46;color:#34d399;width:100%;padding:1rem;border-radius:5px;font-size:.85rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;font-family:Georgia,serif}
+.btn-success:hover:not(:disabled){background:rgba(16,185,129,.35)}
+.btn-success:disabled{opacity:.35;cursor:not-allowed}
+.row{display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}
+.row .btn{width:auto;flex:1;min-width:100px}
+.status{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;background:#150c06;border:1px solid #3d2418;border-radius:4px;font-size:.72rem;color:#8a7a5c;margin-top:.5rem}
+.status.ok{background:rgba(16,185,129,.08);border-color:#065f46;color:#34d399}
+.status.err{background:rgba(196,69,54,.1);border-color:#7f1d1d;color:#f87171}
+.status.warn{background:rgba(229,193,90,.08);border-color:#8b5a2b;color:#e5c15a}
+.status .dot{width:6px;height:6px;border-radius:50%;background:#4a3828;flex-shrink:0}
+.status.ok .dot{background:#10b981;box-shadow:0 0 6px #10b981}
+.status.err .dot{background:#c44536}
+.status.warn .dot{background:#e5c15a}
+.hint{font-size:.68rem;color:#8a7a5c;margin-top:.4rem;font-family:Georgia,serif;font-style:italic}
+.images-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem}
+@media(min-width:720px){.images-grid{grid-template-columns:1fr 1fr 1fr 1fr}}
+.slot{border:2px dashed #4a3828;border-radius:4px;padding:1rem .6rem;text-align:center;cursor:pointer;position:relative;transition:all .15s;background:#150c06;min-height:170px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.4rem}
+.slot:hover{border-color:#c44536;background:rgba(196,69,54,.04)}
+.slot.filled{border-style:solid;border-color:#8b5a2b;padding:.4rem}
+.slot input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.slot .icon{font-size:1.6rem;opacity:.5}
+.slot .txt{font-size:.72rem;color:#a89578;font-family:Georgia,serif}
+.slot .txt strong{color:#e5c15a}
+.slot .num{font-size:.6rem;color:#5a4838;font-family:ui-monospace,monospace;letter-spacing:.1em}
+.slot img{max-width:100%;max-height:180px;border-radius:3px;display:block}
+.slot .rm{position:absolute;top:4px;right:4px;background:rgba(196,69,54,.8);color:#fff;border:none;border-radius:3px;width:22px;height:22px;font-size:.7rem;cursor:pointer;z-index:2}
+.copy-prompts{background:#150c06;border:1px solid #3d2418;border-radius:4px;padding:.7rem;margin-top:.7rem;display:none}
+.copy-prompts.visible{display:block}
+.copy-prompts h4{font-family:Georgia,serif;font-size:.85rem;color:#e5c15a;margin-bottom:.5rem;font-style:italic}
+.cp-item{background:#0a0603;border:1px solid #3d2418;border-radius:3px;padding:.5rem;margin-bottom:.4rem;position:relative}
+.cp-item .cp-title{font-size:.7rem;color:#e5c15a;font-family:Georgia,serif;font-weight:700;margin-bottom:.3rem}
+.cp-item .cp-body{font-size:.62rem;color:#a89578;font-family:ui-monospace,monospace;line-height:1.5;max-height:120px;overflow-y:auto;white-space:pre-wrap;padding-right:3.5rem}
+.cp-item .pcopy{position:absolute;top:.4rem;right:.4rem;font-size:.55rem;padding:.15rem .4rem;border:1px solid #3d2418;border-radius:2px;background:transparent;color:#8a7a5c;cursor:pointer}
+.cp-item .pcopy:hover{color:#e5c15a;border-color:#8b5a2b}
+.dna-box{background:#150c06;border:1px solid #3d2418;border-left:3px solid #e5c15a;border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.72rem;color:#a89578;font-family:ui-monospace,monospace;line-height:1.55;display:none;white-space:pre-wrap;max-height:500px;overflow-y:auto}
+.dna-box.visible{display:block}
+.dna-box .k{color:#e5c15a;font-weight:700;display:inline-block;margin-top:.5rem}
+.dna-box .fused{background:#0a0603;border:1px solid #8b5a2b;border-left:3px solid #c44536;border-radius:3px;padding:.6rem;margin:.4rem 0;color:#e8dcc8;font-size:.68rem;line-height:1.55;white-space:pre-wrap}
+.swatch{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:middle;margin-right:3px;border:1px solid #3d2418}
+.toggle-label{display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.5rem;background:#150c06;border:1px solid #3d2418;border-radius:4px;font-family:Georgia,serif;font-size:.85rem}
+.toggle-label input{width:auto;accent-color:#c44536;transform:scale(1.3);cursor:pointer}
+.toggle-label .lab{color:#e8dcc8}
+.toggle-label .lab strong{color:#e5c15a}
+.control-panel{background:linear-gradient(135deg,rgba(196,69,54,.06),rgba(139,90,43,.04));border:1px solid #3d2418;border-left:3px solid #c44536;border-radius:5px;padding:1.1rem;margin-bottom:1rem}
+.control-panel .info{font-size:.78rem;color:#a89578;margin-bottom:.9rem;line-height:1.6;font-family:Georgia,serif}
+.control-panel .info strong{color:#e5c15a}
+.control-panel .info .sel{color:#e87b35;font-weight:700}
+.progress-bar{height:6px;background:#150c06;border-radius:3px;overflow:hidden;margin-top:.7rem}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,#c44536,#e87b35,#e5c15a);width:0%;transition:width .3s;border-radius:3px}
+.progress-bar .fill.done{background:linear-gradient(90deg,#10b981,#34d399)}
+.batch-info{display:flex;gap:.75rem;flex-wrap:wrap;font-size:.7rem;font-family:ui-monospace,monospace;color:#8a7a5c;margin-top:.6rem;padding-top:.6rem;border-top:1px solid #3d2418}
+.batch-info strong{color:#e5c15a}
+.session-tabs{display:flex;gap:.4rem;overflow-x:auto;padding:.4rem 0;margin-bottom:.6rem;scrollbar-width:thin}
+.session-tab{padding:.5rem .8rem;background:#231409;border:1px solid #3d2418;border-radius:4px;cursor:pointer;font-size:.72rem;font-family:Georgia,serif;color:#a89578;white-space:nowrap;display:flex;align-items:center;gap:.4rem;flex-shrink:0;transition:all .15s}
+.session-tab:hover{border-color:#8b5a2b;color:#e5c15a}
+.session-tab.active{border-color:#e5c15a;color:#e5c15a;background:linear-gradient(135deg,rgba(196,69,54,.1),rgba(139,90,43,.08));box-shadow:0 0 0 1px rgba(229,193,90,.2)}
+.session-tab .tab-count{font-size:.6rem;color:#8a7a5c;padding:.05rem .35rem;background:#0a0603;border-radius:2px;font-family:ui-monospace,monospace}
+.session-tab .tab-close{background:transparent;border:1px solid #7f1d1d;color:#f87171;border-radius:2px;padding:0 .35rem;font-size:.6rem;cursor:pointer;line-height:1.4}
+.session-tab .tab-close:hover{background:rgba(196,69,54,.15)}
+.pagination{display:flex;justify-content:center;align-items:center;gap:.5rem;margin:.8rem 0;font-size:.72rem;font-family:ui-monospace,monospace;color:#a89578;flex-wrap:wrap}
+.pagination button{padding:.35rem .7rem;background:#231409;border:1px solid #3d2418;color:#a89578;border-radius:3px;cursor:pointer;font-size:.7rem;font-family:Georgia,serif}
+.pagination button:hover:not(:disabled){border-color:#8b5a2b;color:#e5c15a}
+.pagination button:disabled{opacity:.3;cursor:not-allowed}
+.pagination .page-info{color:#e5c15a;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1.5rem}
+@media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1024px){.grid{grid-template-columns:1fr 1fr 1fr}}
+@media(min-width:1400px){.grid{grid-template-columns:1fr 1fr 1fr 1fr}}
+.photo{background:#231409;border:1px solid #3d2418;border-radius:4px;overflow:hidden;display:flex;flex-direction:column}
+.photo.pending{border-color:#4a3828;opacity:.9}
+.photo.generating{border-color:#e87b35;box-shadow:0 0 12px rgba(232,123,53,.2)}
+.photo.done{border-color:#8b5a2b}
+.photo.error{border-color:#7f1d1d}
+.photo-img{aspect-ratio:9/16;background:#0a0603;display:flex;align-items:center;justify-content:center;position:relative;min-height:260px}
+.photo-img img{width:100%;height:100%;object-fit:contain;display:block}
+.photo-img .load{width:100%;height:100%;background:#0a0603;display:flex;align-items:center;justify-content:center;color:#4a3828;font-size:.72rem;font-family:ui-monospace,monospace;position:relative;overflow:hidden;flex-direction:column;gap:.5rem;padding:1rem;text-align:center}
+.photo-img .load::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(196,69,54,.08) 50%,transparent 70%);animation:shim 1.8s linear infinite;pointer-events:none}
+@keyframes shim{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.photo-img .err{width:100%;height:100%;background:rgba(196,69,54,.1);display:flex;align-items:center;justify-content:center;color:#f87171;font-size:.7rem;text-align:center;padding:.6rem;flex-direction:column;gap:.3rem}
+.photo-img .err small{color:#a89578;font-size:.6rem;font-family:ui-monospace,monospace}
+.photo-img .mini-btn{margin-top:.3rem;font-size:.65rem;padding:.3rem .8rem;border:1px solid #8b5a2b;background:rgba(139,90,43,.15);color:#e5c15a;border-radius:3px;cursor:pointer;font-family:Georgia,serif;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.photo-img .mini-btn:hover{background:rgba(232,123,53,.25)}
+.photo-meta{padding:.7rem;border-top:1px solid #3d2418;flex:1;display:flex;flex-direction:column;gap:.4rem}
+.pbadge{display:inline-block;font-size:.55rem;text-transform:uppercase;letter-spacing:.12em;padding:.15rem .5rem;border-radius:2px;margin-right:.3rem;margin-bottom:.3rem;font-weight:700;border:1px solid;font-family:ui-monospace,monospace}
+.pbadge.cat{background:rgba(232,123,53,.12);color:#e87b35;border-color:#8b5a2b}
+.pbadge.art{background:rgba(196,69,54,.12);color:#c44536;border-color:#7f1d1d}
+.pbadge.gen{background:rgba(16,185,129,.12);color:#34d399;border-color:#065f46}
+.pbadge.outfit{background:rgba(139,90,43,.18);color:#e5c15a;border-color:#8b5a2b}
+.ptitle{font-family:Georgia,serif;font-size:.85rem;color:#e5c15a;margin-bottom:.3rem;line-height:1.3;font-style:italic}
+.poutfit{font-size:.62rem;color:#a89578;font-family:Georgia,serif;line-height:1.45;margin-bottom:.3rem;font-style:italic;border-left:2px solid #8b5a2b;padding-left:.4rem}
+.pblock{background:#150c06;border:1px solid #3d2418;border-radius:4px;padding:.55rem;position:relative;margin-top:auto}
+.plabel{font-size:.55rem;text-transform:uppercase;letter-spacing:.12em;color:#8a7a5c;font-family:ui-monospace,monospace;margin-bottom:.35rem}
+.ptext{font-size:.6rem;color:#a89578;font-family:ui-monospace,monospace;line-height:1.45;max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;padding-right:3.5rem}
+.pcopy{position:absolute;top:.4rem;right:.4rem;font-size:.55rem;padding:.15rem .4rem;border:1px solid #3d2418;border-radius:2px;background:transparent;color:#8a7a5c;cursor:pointer;font-family:-apple-system,sans-serif}
+.pcopy:hover{color:#e5c15a;border-color:#8b5a2b}
+.popen{display:block;text-align:center;margin-top:.4rem;font-size:.58rem;text-transform:uppercase;letter-spacing:.15em;padding:.4rem;border:1px solid #3d2418;border-radius:4px;color:#a89578;text-decoration:none;font-family:-apple-system,sans-serif}
+.popen:hover{color:#e5c15a;border-color:#8b5a2b}
+.empty-state{grid-column:1/-1;text-align:center;padding:3rem 1rem;color:#8a7a5c;font-family:Georgia,serif;font-style:italic;font-size:.85rem}
+.panel{position:fixed;bottom:0;left:0;right:0;z-index:40}
+.handle{background:#231409;border-top:2px solid #8b5a2b;padding:.55rem 1rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;gap:.5rem}
+.handle .toggle{font-family:ui-monospace,monospace;font-size:.72rem;color:#e5c15a;letter-spacing:.1em;flex-shrink:0}
+.handle .latest{font-size:.72rem;color:#a89578;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left;padding-left:.5rem}
+.handle button{font-size:.6rem;padding:.2rem .5rem;border:1px solid #3d2418;border-radius:3px;background:transparent;color:#8a7a5c;cursor:pointer;font-family:-apple-system,sans-serif}
+.handle button:hover{color:#e5c15a;border-color:#8b5a2b}
+.panel-content{background:#150c06;border-top:1px solid #3d2418;max-height:55vh;overflow-y:auto}
+.panel-content.hidden{display:none}
+.human-log{max-height:100px;overflow-y:auto;padding:.6rem 1rem;border-bottom:1px solid #3d2418;font-family:ui-monospace,monospace;font-size:.7rem}
+.human-log>div{margin-bottom:.2rem}
+.human-log .t{color:#4a3828}
+.human-log .m{color:#a88b4a}
+.debug-log{max-height:240px;overflow-y:auto;padding:.6rem 1rem;font-family:ui-monospace,monospace;font-size:.66rem;line-height:1.5}
+.debug-log>div{margin-bottom:.15rem;word-break:break-word}
+.debug-log .t{color:#4a3828}
+.debug-log .info{color:#a89578}
+.debug-log .ok{color:#a88b4a}
+.debug-log .warn{color:#e5c15a}
+.debug-log .err{color:#f87171}
+.debug-log .api{color:#e87b35}
+.debug-log .raw{color:#c44536;background:#0a0603;padding:.3rem .5rem;border-radius:3px;display:block;margin:.2rem 0;white-space:pre-wrap;font-size:.62rem;line-height:1.45;max-height:180px;overflow-y:auto}
+.toast{position:fixed;top:1rem;left:50%;transform:translateX(-50%) translateY(-120px);background:#231409;border:1px solid #3d2418;border-left:3px solid #e5c15a;border-radius:4px;padding:.75rem 1.2rem;font-size:.8rem;z-index:1000;opacity:0;transition:transform .3s,opacity .3s;max-width:90vw;text-align:center;font-family:Georgia,serif}
+.toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-left-color:#10b981}
+.toast.error{border-left-color:#c44536}
+.toast.warn{border-left-color:#e5c15a}
+.status-bar{position:fixed;bottom:60px;left:0;right:0;background:#231409;border-top:1px solid #3d2418;padding:.5rem 1rem;font-size:.7rem;font-family:ui-monospace,monospace;color:#e8dcc8;display:flex;align-items:center;gap:.5rem;transform:translateY(100%);transition:transform .3s;z-index:30}
+.status-bar.visible{transform:translateY(0)}
+.status-bar .spinner{width:12px;height:12px;border:2px solid rgba(196,69,54,.2);border-top-color:#c44536;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#150c06}
+::-webkit-scrollbar-thumb{background:#4a3828;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#8b5a2b}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<div class="kata">✦ Egon Multi-Ref Lab · v4 ✦</div>
+<h1>Multi-Ref → Garde-robe</h1>
+<p class="sub">4 refs · fusion multi-voix · sessions · garde-robe concrète</p>
+</header>
+
+<div class="banner">
+<strong>v4 — correction habits :</strong> les vêtements ne sont plus décrits par des adjectifs flous (« extravagant, théâtral »), mais par des <strong>types de vêtements concrets</strong> tirés d'une garde-robe organisée en 6 familles. Chaque œuvre reçoit 2–3 pièces issues de familles différentes : <strong>Moebius</strong> (robes fluides, combinaisons organiques), <strong>Enki Bilal</strong> (vestes à épaulettes, tailleurs angulaires), <strong>astronaute hyper-tech</strong>, <strong>punk + rétrofuturiste</strong>, <strong>geek / fan sci-fi</strong>, <strong>kung-fu / moine Shaolin / maître tai-chi</strong>. Ces vêtements sont décrits comme des <em>objets</em>, jamais comme un style — le style vient uniquement de la fusion des 4 images.
+</div>
+
+<!-- ═══ CLÉS API ═══ -->
+<section class="card">
+<div class="card-head"><span>🔑 Clés API Agnes</span><span class="badge" id="keyBadge">0 validée</span></div>
+<div class="card-body">
+<textarea id="keysInput" placeholder="Collez vos clés API ici, une par ligne :&#10;sk-xxxxxxxxxxxx&#10;sk-yyyyyyyyyyyy" autocomplete="off" spellcheck="false"></textarea>
+<div class="row">
+<button class="btn btn-amber" id="validateBtn">🔐 Valider et enregistrer</button>
+<button class="btn btn-slate" id="clearKeysBtn" style="width:auto;min-width:80px;">Effacer</button>
+</div>
+<div class="status" id="keyStatus"><span class="dot"></span><span id="keyStatusText">Aucune clé enregistrée</span></div>
+<div class="hint">Rotation auto · paceur 3.4s/clé · retry ×6.</div>
+</div>
+</section>
+
+<!-- ═══ 4 IMAGES ═══ -->
+<section class="card">
+<div class="card-head"><span>🖼️ 4 images de référence</span><span class="badge" id="refBadge">0 / 4</span></div>
+<div class="card-body">
+<div class="images-grid" id="imagesGrid">
+<div class="slot" data-slot="0"><input type="file" accept="image/*" class="slot-input"><div class="icon">＋</div><div class="txt"><strong>Image 1</strong></div><div class="num">Référence</div></div>
+<div class="slot" data-slot="1"><input type="file" accept="image/*" class="slot-input"><div class="icon">＋</div><div class="txt"><strong>Image 2</strong></div><div class="num">Référence</div></div>
+<div class="slot" data-slot="2"><input type="file" accept="image/*" class="slot-input"><div class="icon">＋</div><div class="txt"><strong>Image 3</strong></div><div class="num">Référence</div></div>
+<div class="slot" data-slot="3"><input type="file" accept="image/*" class="slot-input"><div class="icon">＋</div><div class="txt"><strong>Image 4</strong></div><div class="num">Référence</div></div>
+</div>
+<div class="row">
+<button class="btn btn-amber" id="analyzeBtn" disabled>🔍 Analyser et créer une session</button>
+</div>
+<div class="status" id="analyzeStatus"><span class="dot"></span><span id="analyzeStatusText">Chargez les 4 images</span></div>
+
+<div class="copy-prompts" id="copyPromptsBox">
+<h4>📋 4 prompts de copie parfaite (avant fusion)</h4>
+<div id="copyPromptsList"></div>
+</div>
+
+<div class="dna-box" id="dnaBox"></div>
+</div>
+</section>
+
+<!-- ═══ OPTIONS ═══ -->
+<section class="card">
+<div class="card-head"><span>⚙️ Options</span></div>
+<div class="card-body">
+<label class="toggle-label">
+<input type="checkbox" id="mixArtistsToggle">
+<span class="lab">Mélanger chaque œuvre avec un <strong>artiste célèbre</strong> différent (40 artistes par lot)</span>
+</label>
+<div class="hint">Le style fusionné reste dominant. Chaque œuvre est ensuite infléchie par un artiste différent.</div>
+</div>
+</section>
+
+<!-- ═══ CONTRÔLE ═══ -->
+<div class="control-panel">
+<div class="info" id="controlInfo">Chargez les 4 images, analysez-les pour créer une session, puis générez.</div>
+<div class="row" style="align-items:stretch;gap:.6rem;">
+<div style="flex:2;min-width:200px;"><button class="btn btn-mega" id="genBtn" disabled>✦ Générer 40 œuvres</button></div>
+<div style="flex:2;min-width:200px;"><button class="btn-success" id="continueBtn" disabled>＋ Continuer (+40)</button></div>
+<div style="flex:1;min-width:100px;"><button class="btn btn-slate" id="stopBtn" style="height:100%;" disabled>⏹ Stop</button></div>
+</div>
+<div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+<div class="batch-info">
+<span>Session <strong id="sessionInfo">—</strong></span>
+<span>Générées <strong id="totalCount">0 / 0</strong></span>
+<span>En cours <strong id="queueCount">0</strong></span>
+<span id="rpmInfo"></span>
+</div>
+</div>
+
+<!-- ═══ SESSIONS + RÉSULTATS ═══ -->
+<div id="resultsHeader" style="display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0 .6rem;flex-wrap:wrap;gap:.5rem;">
+<div style="font-family:Georgia,serif;font-size:1.1rem;letter-spacing:.12em;text-transform:uppercase;color:#e5c15a;">✦ Sessions</div>
+<div id="resultsCount" style="font-size:.72rem;font-family:ui-monospace,monospace;color:#a89578;">0 session</div>
+</div>
+<div class="session-tabs" id="sessionTabs"></div>
+<div class="pagination" id="pagination"></div>
+<div class="grid" id="photoGrid"></div>
+<div class="pagination" id="paginationBottom"></div>
+
+</div>
+
+<!-- ═══ CONSOLE ═══ -->
+<div class="panel">
+<div class="handle" id="panelHandle">
+<span class="toggle" id="panelToggle">▼ CONSOLE</span>
+<span class="latest" id="humanLatest">Prêt.</span>
+<button id="copyConsoleBtn">Copier</button>
+<button id="clearConsoleBtn">Effacer</button>
+</div>
+<div class="panel-content hidden" id="panelContent">
+<div class="human-log" id="humanLog"></div>
+<div class="debug-log" id="debugLog"></div>
+</div>
+</div>
+
+<div class="toast" id="toast"><span id="toastText">Message</span></div>
+<div class="status-bar" id="statusBar"><div class="spinner"></div><span id="statusText">Préparation…</span></div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
+const API_BASE = 'https://apihub.agnes-ai.com/v1';
+const MODEL_TEXT = 'agnes-2.5-flash';
+const MODEL_IMAGE = 'agnes-image-2.1-flash';
+const IMAGE_SIZE = '1024x1792';
+const DELAY_PER_KEY_MS = 3400;
+const REF_MAX_SIDE = 1024;
+const PAGE_SIZE = 80;
+const KEYS_STORAGE = 'emr2_keys';
+const REFS_STORAGE = 'emr2_refs';
+const SESSIONS_STORAGE = 'emr4_sessions';
+const CURRENT_SESSION_STORAGE = 'emr4_current';
+const DEBUG_MAX = 500;
+const MAX_ATTEMPTS = 6;
+
+// ═══════════════════════════════════════════════════════════════
+// GARDE-ROBE — TYPES DE VÊTEMENTS CONCRETS (pas de mots de style)
+// Chaque entrée décrit UN OBJET vestimentaire précis.
+// Moebius et Bilal ne sont JAMAIS nommés dans le prompt final,
+// ce sont juste des familles internes pour organiser la variété.
+// ═══════════════════════════════════════════════════════════════
+const WARDROBE = {
+  // Famille 1 — silhouettes fluides, organiques, nomades (inspiration Moebius)
+  fluid: [
+    'long flowing desert robe with pointed hood and wide trailing sleeves',
+    'tight aerodynamic bodysuit with organic curved seams and soft high collar',
+    'layered tunic with tall collar, wide leather belt and pleated trousers',
+    'asymmetric wrap-coat over loose trousers and tall soft leather boots',
+    'structured cape with organic folds and geometric clasps over a fitted undersuit',
+    'turban headwrap with long fabric tail falling over one shoulder',
+    'high flat-brimmed hat and long nomad coat with ribbed vertical panels',
+    'hooded poncho with visible seam lines, fingerless gloves and wrapped forearms',
+    'sand-toned cloak with crescent-shaped shoulder piece and wide gathered pants',
+    'soft leather ankle boots with large round buckles and a hanging side-pouch'
+  ],
+  // Famille 2 — tailleurs angulaires, uniformes structurés (inspiration Enki Bilal)
+  tailored: [
+    'sharp tailored jacket with high epaulettes and rigid squared shoulders',
+    'military-style uniform with futuristic insignia and asymmetric belt',
+    'long structured trench coat with fur collar and high-lapel vest underneath',
+    'tight cylindrical trousers with high boots and a cropped armored jacket',
+    'bulky armored jacket with articulated plates and a heavy high collar',
+    'oversized architectural coat with geometric lapels and concealed buttons',
+    'tall cylindrical hat with a rigid brim and a high-neck top',
+    'futuristic tights paired with a structured blazer and a mirrored belt buckle',
+    'asymmetric double-breasted jacket with chrome buttons and wide belt',
+    'high-waisted uniform trousers with a wide sash and cuffed jacket'
+  ],
+  // Famille 3 — combinaisons astronautes hyper-technologiques
+  astronaut: [
+    'hyper-technological spacesuit with glowing cyan panels, magnetic joints and a glass visor helmet',
+    'sleek EVA suit with ribbed limbs, holographic HUD and a reflective gold visor',
+    'deep-space exploration suit with articulated gauntlets and a back-mounted life-pack',
+    'magnificent ivory astronaut armour with gold trims and an integrated chest display',
+    'pressurized lunar suit with a glowing ring collar and silver-plated boots',
+    'orbital worker suit with layered shoulder pads and a long antenna helmet',
+    'iridescent spacesuit with organic ribbing and magnetic grappling gloves',
+    'retro-futurist rocket pilot suit with a curved helmet and mechanical chest panel',
+    'bulky exo-suit with hydraulic limbs and a breathing mask',
+    'translucent pressure suit revealing a skeleton of cables and glowing coolant lines'
+  ],
+  // Famille 4 — punk + rétrofuturiste
+  punkRetro: [
+    'punk leather jacket with silver studs, a chrome shoulder plate and retro-futuristic piping',
+    'mohawk with a riveted harness, LED-seamed vinyl pants and magnetic boots',
+    'ripped trench coat over a vacuum-sealed vinyl undersuit with neon cables',
+    'pin-covered military jacket with glowing seams and retro pilot goggles',
+    'asymmetric punk vest with visible cables, plaid kilt and buckled combat boots',
+    'studded utility belt with multiple pouches, fingerless gloves and a spiked collar',
+    'cropped biker jacket with chrome chains and holographic patches',
+    'oversized safety pins and torn fishnet sleeves under a structured coat',
+    'gas-mask pendant, bullet belt and heavily patched bomber jacket',
+    'chrome-plated cyber-punk armour vest over a mesh shirt'
+  ],
+  // Famille 5 — geek / fan de science-fiction
+  geekSciFi: [
+    'oversized hoodie with printed circuit-board patterns and glowing thread lines',
+    'vintage sci-fi convention jacket covered in embroidered patches',
+    'thick black-rimmed glasses, utility harness and cargo pants with multiple pockets',
+    'bucket hat with a data-visor and a multi-tool belt across the chest',
+    'old-school astronaut-print sweatshirt and wide harem pants with ankle bands',
+    'cybernetic-laced utility vest with laptop holster and rolled-up sleeves',
+    'retro-futurist jumpsuit with shoulder straps and a massive rectangular backpack',
+    'graphic t-shirt of a 1970s starship under a bulky bomber jacket and chunky sneakers',
+    'pixelated LED jacket and headset with a boom microphone',
+    'multi-layer techwear with hex-pattern cargo pants and a transparent plastic raincoat'
+  ],
+  // Famille 6 — kung-fu / Shaolin / taï-chi
+  kungFu: [
+    'traditional monk robe with a wide sash and cloth sandals',
+    'kung fu suit with frog closures, cloth belt and black cotton shoes',
+    'Shaolin monk yellow robe with orange prayer beads and wrapped forearms',
+    'tai-chi master white silk tunic with wide sleeves and gathered pants',
+    'wrapped linen training outfit with fingerless gloves and bare feet',
+    'hanfu-style robe with diagonal collar and cloth boots',
+    'loose martial arts pants with ribbed ankles and a wide belt',
+    'flowing training coat with crossed collar, cloth wrist wraps and sandals',
+    'monk vest with visible stitching and a long prayer-bead necklace',
+    'tai-chi uniform in neutral tones with an embroidered small chest emblem'
+  ]
+};
+
+// ═══════════════════════════════════════════════════════════════
+// 40 ARTISTES CÉLÈBRES
+// ═══════════════════════════════════════════════════════════════
+const FAMOUS_ARTISTS = [
+  {name:'Pablo Picasso', style:'cubist fragmentation, geometric planes, multiple viewpoints simultaneously'},
+  {name:'Vincent van Gogh', style:'swirling thick impasto, vibrant yellow and blue contrasts, turbulent brushwork'},
+  {name:'Claude Monet', style:'impressionist dappled light, soft pastel palette, broken brushstrokes'},
+  {name:'Gustav Klimt', style:'gold leaf ornamentation, intricate decorative patterns, byzantine richness'},
+  {name:'Henri Matisse', style:'fauvist flat colors, bold outlines, decorative shapes, joyful arabesques'},
+  {name:'Salvador Dalí', style:'surrealist dreamlike imagery, melting forms, meticulous precision applied to impossible scenes'},
+  {name:'Paul Cézanne', style:'geometric simplification, constructive brushstrokes, underlying forms'},
+  {name:'Pierre-Auguste Renoir', style:'soft feathery brushstrokes, warm social scenes, dappled light'},
+  {name:'Edgar Degas', style:'pastel dancers, candid compositions, captured movement'},
+  {name:'Édouard Manet', style:'flat areas of color, bold subject matter, modern life'},
+  {name:'Paul Gauguin', style:'synthetic flat planes, exotic symbolism, bold outlines'},
+  {name:'Marc Chagall', style:'dreamlike floating figures, jewel-toned colors, poetic symbolism'},
+  {name:'Wassily Kandinsky', style:'abstract geometric color, musical compositions, spiritual abstraction'},
+  {name:'Piet Mondrian', style:'neoplastic grid, primary colors, black lines, absolute abstraction'},
+  {name:'Joan Miró', style:'biomorphic shapes, primary colors, surreal symbols, playful automatism'},
+  {name:'René Magritte', style:'surrealist visual paradoxes, realistic rendering of impossible scenes'},
+  {name:'Francis Bacon', style:'distorted figurative screams, smeared paint, caged figures'},
+  {name:'Lucian Freud', style:'thick impasto flesh, psychological intensity, unflinching portraiture'},
+  {name:'David Hockney', style:'bright flat colors, swimming pools, californian light'},
+  {name:'Andy Warhol', style:'pop art silkscreen, repetition, saturated colors'},
+  {name:'Roy Lichtenstein', style:'comic book ben-day dots, bold outlines, primary colors'},
+  {name:'Jackson Pollock', style:'action painting, drips and splashes, all-over composition'},
+  {name:'Mark Rothko', style:'color field abstraction, soft rectangular forms, meditative depth'},
+  {name:'Willem de Kooning', style:'abstract expressionist, violent brushwork, fragmented figures'},
+  {name:'Frida Kahlo', style:'surrealist self-portraits, mexican symbolism, intense gaze'},
+  {name:'Diego Rivera', style:'muralist social realism, simplified monumental figures'},
+  {name:"Georgia O'Keeffe", style:'enlarged flowers, desert landscapes, organic abstractions'},
+  {name:'Edward Hopper', style:'american realist, lonely urban scenes, muted palette'},
+  {name:'Tamara de Lempicka', style:'art deco glamour, sharp geometric contours, polished finish'},
+  {name:'Amedeo Modigliani', style:'elongated faces, almond eyes, warm earthy tones, elegant melancholy'},
+  {name:'Egon Schiele', style:'angular gaunt figures, raw ink lines, muted flesh with carmine accents'},
+  {name:'Oskar Kokoschka', style:'expressive psychological portraits, turbulent brushwork'},
+  {name:'Max Beckmann', style:'bold black outlines, harsh compression, symbolic scenes'},
+  {name:'Otto Dix', style:'new objectivity, brutal realism, sharp social critique'},
+  {name:'George Grosz', style:'satirical caricature, sharp angular lines, political critique'},
+  {name:'Ernst Ludwig Kirchner', style:'expressionist jagged lines, acid colors, urban anxiety'},
+  {name:'Emil Nolde', style:'intense saturated colors, emotional power, mythic themes'},
+  {name:'Karl Schmidt-Rottluff', style:'expressionist woodcut-like forms, primitive energy, sharp contrasts'},
+  {name:'Erich Heckel', style:'expressionist angular figures, pale palette with strong accents'},
+  {name:'Edvard Munch', style:'symbolist angst, swirling lines, psychological intensity, nordic light'}
+];
+
+// ═══════════════════════════════════════════════════════════════
+// CATÉGORIES
+// ═══════════════════════════════════════════════════════════════
+const CHARACTERS = [
+  {id:'man', name:'Un homme', prompt:'a single man, half or full body, face clearly visible', cat:'character'},
+  {id:'woman', name:'Une femme', prompt:'a single woman, half or full body, face clearly visible', cat:'character'},
+  {id:'couple', name:'Un homme et une femme', prompt:'a man and a woman together, both faces clearly visible', cat:'character'},
+  {id:'child', name:'Un enfant', prompt:'a child standing, face clearly visible', cat:'character'},
+  {id:'group', name:'Un groupe', prompt:'a small group of three or four people, faces clearly visible', cat:'character'}
+];
+const PLACES = [
+  {id:'countryside', name:'Campagne', prompt:'a wide peaceful countryside landscape', cat:'place'},
+  {id:'city', name:'Ville', prompt:'a bustling city street with tall buildings', cat:'place'},
+  {id:'beach', name:'Bord de mer', prompt:'a sunny beach with gentle waves', cat:'place'},
+  {id:'mountains', name:'Montagnes', prompt:'majestic mountains in the background', cat:'place'},
+  {id:'forest', name:'Forêt', prompt:'a deep mysterious forest with tall trees', cat:'place'}
+];
+const HOUSES = [
+  {id:'cottage', name:'Chaumière', prompt:'a small thatched cottage with a garden', cat:'house'},
+  {id:'manor', name:'Manoir', prompt:'a grand manor house with many windows', cat:'house'},
+  {id:'cabin', name:'Cabane', prompt:'a rustic wooden cabin in nature', cat:'house'},
+  {id:'tower', name:'Tour', prompt:'a tall medieval stone tower', cat:'house'},
+  {id:'stilt', name:'Maison sur pilotis', prompt:'a house on stilts over calm water', cat:'house'}
+];
+const FUNNY_SCENES = [
+  {id:'slip', name:'Glissade', prompt:'someone comically slipping on a banana peel', cat:'funny'},
+  {id:'cat_theft', name:'Chat voleur', prompt:'a cat stealing food from a table', cat:'funny'},
+  {id:'hat_fly', name:'Chapeau envolé', prompt:'a hat flying away in the wind while its owner chases it', cat:'funny'},
+  {id:'dog_tail', name:'Chien qui tourne', prompt:'a dog excitedly chasing its own tail', cat:'funny'},
+  {id:'chair_fall', name:'Chute de chaise', prompt:'a person comically falling off a chair', cat:'funny'}
+];
+const BEAUTIFUL_SCENES = [
+  {id:'sunset', name:'Coucher de soleil', prompt:'a golden sunset over calm water', cat:'beautiful'},
+  {id:'flowers', name:'Champ de fleurs', prompt:'a field full of wildflowers in bloom', cat:'beautiful'},
+  {id:'snow', name:'Paysage enneigé', prompt:'a peaceful snow-covered landscape', cat:'beautiful'},
+  {id:'rainbow', name:'Arc-en-ciel', prompt:'a rainbow after the rain', cat:'beautiful'},
+  {id:'aurora', name:'Aurore boréale', prompt:'a starry sky with aurora borealis', cat:'beautiful'}
+];
+const SPECIALS = [
+  {id:'beautiful_woman', name:'Une belle femme', prompt:'an elegant beautiful woman with flowing hair, face clearly visible', cat:'special'},
+  {id:'geek', name:'Un geek', prompt:'a young geek with glasses, face visible', cat:'special'},
+  {id:'politics', name:'Actualité politique', prompt:'a political press conference scene with microphones, a speaker at the podium', cat:'special'},
+  {id:'small_dog', name:'Un petit chien', prompt:'a small cute dog sitting', cat:'special'},
+  {id:'cat', name:'Un chat', prompt:'a small cat sitting calmly', cat:'special'},
+  {id:'bird', name:'Un oiseau', prompt:'a small colorful bird perched on a branch', cat:'special'},
+  {id:'flower', name:'Une fleur', prompt:'a single flower in full bloom', cat:'special'}
+];
+const INITIAL_COMBOS = [
+  [CHARACTERS[0], PLACES[0]],
+  [CHARACTERS[1], HOUSES[0]],
+  [CHARACTERS[2], PLACES[1]],
+  [CHARACTERS[3], SPECIALS[3]],
+  [SPECIALS[0], PLACES[2]],
+  [SPECIALS[1], HOUSES[3]],
+  [SPECIALS[4], HOUSES[2]],
+  [CHARACTERS[0], SPECIALS[3], PLACES[3]],
+  [CHARACTERS[1], BEAUTIFUL_SCENES[3]],
+  [CHARACTERS[4], BEAUTIFUL_SCENES[0]]
+];
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+const state = {
+  apiKeys: [],
+  images: [null, null, null, null],
+  imageNames: ['', '', '', ''],
+  sessions: [],
+  currentSessionId: null,
+  currentPage: 0,
+  isRunning: false,
+  stopRequested: false,
+  keyIndex: 0,
+  humanLog: [],
+  debugLog: [],
+  lastRawResponse: '',
+  mixArtists: false,
+  workCards: new Map()
+};
+
+// ═══════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nowTime = () => new Date().toLocaleTimeString('fr-FR', { hour12: false });
+const sanitize = t => String(t == null ? '' : t).replace(/[\u2018\u2019\u201B\u2032\u02BC]/g, "'").replace(/[\u201C\u201D\u201F\u2033]/g, '"').replace(/\u2013|\u2014/g, '-').replace(/\u2026/g, '...').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\u00A0|\u202F/g, ' ');
+const trunc = (t, n) => { if (!t) return ''; const s = String(t).replace(/\s+/g, ' ').trim(); return s.length <= n ? s : s.slice(0, n - 1) + '…'; };
+const normalizeHex = h => { if (!h) return ''; let s = String(h).trim(); if (!s.startsWith('#')) s = '#' + s; if (/^#[0-9a-fA-F]{6}$/.test(s)) return s.toLowerCase(); if (/^#[0-9a-fA-F]{3}$/.test(s)) return ('#'+s[1]+s[1]+s[2]+s[2]+s[3]+s[3]).toLowerCase(); return ''; };
+function shuffleArray(arr) { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function human(msg) {
+  state.humanLog.push({ t: nowTime(), m: msg });
+  if (state.humanLog.length > 80) state.humanLog.shift();
+  const el = $('humanLatest'); if (el) el.textContent = msg;
+  renderHuman();
+}
+function renderHuman() {
+  const el = $('humanLog'); if (!el) return;
+  el.innerHTML = state.humanLog.slice(-30).map(e => '<div><span class="t">' + e.t + '</span> <span class="m">' + esc(e.m) + '</span></div>').join('');
+  el.scrollTop = el.scrollHeight;
+}
+function debug(msg, level = 'info', raw) {
+  state.debugLog.push({ t: nowTime(), m: msg, c: level, raw: raw });
+  if (state.debugLog.length > DEBUG_MAX) state.debugLog.shift();
+  renderDebug();
+}
+function renderDebug() {
+  const el = $('debugLog'); if (!el) return;
+  el.innerHTML = state.debugLog.slice(-200).map(e => {
+    let html = '<div><span class="t">' + e.t + '</span> <span class="' + e.c + '">' + esc(e.m) + '</span>';
+    if (e.raw) html += '<span class="raw">' + esc(String(e.raw).slice(0, 1500)) + '</span>';
+    html += '</div>';
+    return html;
+  }).join('');
+  el.scrollTop = el.scrollHeight;
+}
+function toast(msg, type = 'success', dur = 2500) {
+  const t = $('toast');
+  t.className = 'toast ' + type + ' visible';
+  $('toastText').textContent = msg;
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.className = 'toast ' + type; }, dur);
+}
+function setStatus(txt) {
+  const b = $('statusBar');
+  if (txt) { b.classList.add('visible'); $('statusText').textContent = txt; }
+  else b.classList.remove('visible');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════════════
+const _mem = {};
+let _lsOk = false, _ssOk = false;
+try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); _lsOk = true; } catch (e) {}
+try { sessionStorage.setItem('__t', '1'); sessionStorage.removeItem('__t'); _ssOk = true; } catch (e) {}
+function storageGet(k) {
+  if (_lsOk) { try { const v = localStorage.getItem(k); if (v !== null) return v; } catch (e) {} }
+  if (_ssOk) { try { const v = sessionStorage.getItem(k); if (v !== null) return v; } catch (e) {} }
+  return Object.prototype.hasOwnProperty.call(_mem, k) ? _mem[k] : null;
+}
+function storageSet(k, v) {
+  _mem[k] = String(v);
+  if (_lsOk) { try { localStorage.setItem(k, v); } catch (e) {} }
+  if (_ssOk) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+}
+function storageDel(k) {
+  delete _mem[k];
+  if (_lsOk) { try { localStorage.removeItem(k); } catch (e) {} }
+  if (_ssOk) { try { sessionStorage.removeItem(k); } catch (e) {} }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WARDROBE PICKER — pondéré (fluid et tailored légèrement prioritaires)
+// Chaque work reçoit 2 ou 3 pièces de familles différentes.
+// ═══════════════════════════════════════════════════════════════
+function pickWardrobe() {
+  const categories = Object.keys(WARDROBE);
+  // Pondération : fluid + tailored + astronaut légèrement avantagés
+  const weights = { fluid: 3, tailored: 3, astronaut: 2, punkRetro: 2, geekSciFi: 2, kungFu: 2 };
+  const pool = [];
+  categories.forEach(cat => {
+    const w = weights[cat] || 1;
+    for (let i = 0; i < w; i++) pool.push(cat);
+  });
+  const picked = new Set();
+  const n = Math.random() < 0.55 ? 2 : 3;
+  const result = [];
+  let safety = 0;
+  while (result.length < n && safety < 40) {
+    safety++;
+    const cat = pool[Math.floor(Math.random() * pool.length)];
+    if (picked.has(cat)) continue;
+    picked.add(cat);
+    const items = WARDROBE[cat];
+    const item = items[Math.floor(Math.random() * items.length)];
+    result.push({ cat, item });
+  }
+  return result;
+}
+function wardrobeLabel(wardrobe) {
+  if (!wardrobe || wardrobe.length === 0) return '';
+  const labels = {
+    fluid: 'Moebius',
+    tailored: 'Bilal',
+    astronaut: 'Astronaute',
+    punkRetro: 'Punk rétro',
+    geekSciFi: 'Geek/SF',
+    kungFu: 'Kung-fu'
+  };
+  return wardrobe.map(w => labels[w.cat] || w.cat).join(' + ');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SESSIONS
+// ═══════════════════════════════════════════════════════════════
+function getCurrentSession() { return state.sessions.find(s => s.id === state.currentSessionId) || null; }
+function createSession(styleDNA, analyses) {
+  const idx = state.sessions.length + 1;
+  const now = new Date();
+  const session = {
+    id: 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+    name: 'Session ' + idx,
+    createdAt: Date.now(),
+    dateLabel: now.toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
+    styleDNA: styleDNA,
+    analyses: analyses.map(a => a ? { ...a } : null),
+    works: []
+  };
+  state.sessions.push(session);
+  state.currentSessionId = session.id;
+  state.currentPage = 0;
+  saveSessions();
+  return session;
+}
+function switchSession(id) {
+  state.currentSessionId = id;
+  state.currentPage = 0;
+  storageSet(CURRENT_SESSION_STORAGE, id);
+  renderWorksGrid();
+  renderAnalysisUI();
+  updateButtons();
+}
+function deleteSession(id) {
+  const sess = state.sessions.find(s => s.id === id);
+  if (!sess) return;
+  if (!confirm('Supprimer ' + sess.name + ' et ses ' + (sess.works || []).length + ' œuvre(s) ?')) return;
+  state.sessions = state.sessions.filter(s => s.id !== id);
+  if (state.currentSessionId === id) {
+    state.currentSessionId = state.sessions.length > 0 ? state.sessions[state.sessions.length - 1].id : null;
+    state.currentPage = 0;
+  }
+  saveSessions();
+  renderWorksGrid();
+  renderSessionTabs();
+  renderAnalysisUI();
+  updateButtons();
+  toast('Session supprimée', 'warn');
+}
+function saveSessions() {
+  try { storageSet(SESSIONS_STORAGE, JSON.stringify(state.sessions)); } catch (e) {}
+  try { if (state.currentSessionId) storageSet(CURRENT_SESSION_STORAGE, state.currentSessionId); } catch (e) {}
+}
+function loadSessions() {
+  try {
+    const raw = storageGet(SESSIONS_STORAGE);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) state.sessions = arr;
+    }
+    // Migration : s'assurer que chaque œuvre possède une garde-robe
+    state.sessions.forEach(sess => {
+      (sess.works || []).forEach(w => {
+        if (!w.wardrobe || w.wardrobe.length === 0) w.wardrobe = pickWardrobe();
+      });
+    });
+    const cur = storageGet(CURRENT_SESSION_STORAGE);
+    if (cur && state.sessions.find(s => s.id === cur)) state.currentSessionId = cur;
+    else if (state.sessions.length > 0) state.currentSessionId = state.sessions[state.sessions.length - 1].id;
+  } catch (e) { debug('Erreur chargement sessions : ' + e.message, 'err'); }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CLÉS API
+// ═══════════════════════════════════════════════════════════════
+function isValidKey(k) { return typeof k === 'string' && k.startsWith('sk-') && k.length >= 15 && k.length <= 200; }
+async function quickPing(key) {
+  try {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(API_BASE + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: MODEL_TEXT, messages: [{ role: 'user', content: 'ok' }], max_tokens: 1 }),
+      signal: controller.signal
+    });
+    clearTimeout(tid);
+    return res.status !== 401 && res.status !== 403;
+  } catch (e) { return null; }
+}
+async function validateAndSaveKeys() {
+  const raw = $('keysInput').value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (raw.length === 0) { toast('Aucune clé à valider', 'error'); return; }
+  $('validateBtn').disabled = true;
+  $('validateBtn').textContent = '⏳ Validation…';
+  human('🔐 Validation de ' + raw.length + ' clé(s)…');
+  const valid = [];
+  for (let i = 0; i < raw.length; i++) {
+    const k = raw[i];
+    if (!isValidKey(k)) { debug('Clé ' + (i + 1) + ' : format invalide', 'err'); continue; }
+    const ping = await quickPing(k);
+    if (ping === false) { debug('Clé ' + (i + 1) + ' : refusée', 'err'); continue; }
+    valid.push(k);
+    debug('Clé ' + (i + 1) + ' : OK', 'ok');
+  }
+  state.apiKeys = valid;
+  storageSet(KEYS_STORAGE, JSON.stringify(valid));
+  const st = $('keyStatus');
+  if (valid.length > 0) {
+    st.className = 'status ok';
+    $('keyStatusText').textContent = valid.length + ' clé(s) enregistrée(s) · RPM ≈ ' + (valid.length * 12) + '/min';
+    $('rpmInfo').textContent = 'RPM cap ≈ ' + (valid.length * 12);
+  } else {
+    st.className = 'status err';
+    $('keyStatusText').textContent = 'Aucune clé valide';
+  }
+  $('validateBtn').disabled = false;
+  $('validateBtn').textContent = '🔐 Valider et enregistrer';
+  $('keyBadge').textContent = valid.length + ' validée' + (valid.length > 1 ? 's' : '');
+  updateButtons();
+  toast(valid.length + ' clé(s) enregistrée(s)', valid.length > 0 ? 'success' : 'error', 3000);
+}
+function getKey() {
+  if (state.apiKeys.length === 0) return '';
+  const k = state.apiKeys[state.keyIndex % state.apiKeys.length];
+  state.keyIndex++;
+  return k;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// IMAGES
+// ═══════════════════════════════════════════════════════════════
+function compressImg(dataUrl, maxSide) {
+  maxSide = maxSide || REF_MAX_SIDE;
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => {
+      let { width: w, height: h } = img;
+      const s = Math.min(1, maxSide / Math.max(w, h));
+      w = Math.max(1, Math.round(w * s));
+      h = Math.max(1, Math.round(h * s));
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const x = c.getContext('2d');
+      x.fillStyle = '#fff'; x.fillRect(0, 0, w, h);
+      x.drawImage(img, 0, 0, w, h);
+      let url = c.toDataURL('image/jpeg', 0.85);
+      let q = 0.85;
+      while (url.length > 1.2 * 1024 * 1024 && q > 0.5) { q -= 0.1; url = c.toDataURL('image/jpeg', q); }
+      res(url);
+    };
+    img.onerror = () => res(dataUrl);
+    img.src = dataUrl;
+  });
+}
+async function handleSlotFile(slotIdx, file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('Fichier non image', 'error'); return; }
+  if (file.size > 30 * 1024 * 1024) { toast('Image trop lourde (>30 Mo)', 'error'); return; }
+  try {
+    const dataUrl = await new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = e => res(e.target.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+    const compressed = await compressImg(dataUrl);
+    state.images[slotIdx] = compressed;
+    state.imageNames[slotIdx] = file.name;
+    storageSet(REFS_STORAGE, JSON.stringify({ images: state.images, names: state.imageNames }));
+    refreshSlots();
+    human('📷 Image ' + (slotIdx + 1) + ' chargée : ' + file.name);
+    toast('Image ' + (slotIdx + 1) + ' chargée', 'success', 1500);
+  } catch (e) { debug('Erreur image : ' + e.message, 'err'); toast('Chargement impossible', 'error'); }
+}
+function refreshSlots() {
+  const slots = document.querySelectorAll('.slot');
+  let count = 0;
+  state.images.forEach((img, i) => {
+    const slot = slots[i];
+    if (!slot) return;
+    if (img) {
+      count++;
+      slot.classList.add('filled');
+      slot.innerHTML = '<input type="file" accept="image/*" class="slot-input"><button class="rm" data-rm="' + i + '">✕</button><img src="' + img + '" alt="">';
+    } else {
+      slot.classList.remove('filled');
+      slot.innerHTML = '<input type="file" accept="image/*" class="slot-input"><div class="icon">＋</div><div class="txt"><strong>Image ' + (i + 1) + '</strong></div><div class="num">Référence</div>';
+    }
+    const input = slot.querySelector('.slot-input');
+    if (input) input.onchange = (e) => { const f = e.target.files && e.target.files[0]; if (f) handleSlotFile(i, f); e.target.value = ''; };
+    const rm = slot.querySelector('.rm');
+    if (rm) rm.onclick = (e) => { e.stopPropagation(); removeSlot(i); };
+  });
+  $('refBadge').textContent = count + ' / 4';
+  updateButtons();
+}
+function removeSlot(i) {
+  state.images[i] = null;
+  state.imageNames[i] = '';
+  storageSet(REFS_STORAGE, JSON.stringify({ images: state.images, names: state.imageNames }));
+  refreshSlots();
+  toast('Image ' + (i + 1) + ' retirée', 'warn');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// JSON PARSING
+// ═══════════════════════════════════════════════════════════════
+function extractBalanced(text, openChar, closeChar) {
+  let start = text.indexOf(openChar);
+  if (start < 0) return null;
+  let depth = 0, inStr = false, escNext = false;
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i];
+    if (escNext) { escNext = false; continue; }
+    if (ch === '\\') { escNext = true; continue; }
+    if (ch === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (ch === openChar) depth++;
+    else if (ch === closeChar) { depth--; if (depth === 0) return text.slice(start, i + 1); }
+  }
+  return null;
+}
+function repairJson(text) {
+  if (!text) return null;
+  let c = String(text).replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').trim();
+  const fm = c.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fm) c = fm[1].trim();
+  const fb = c.indexOf('{'); if (fb < 0) return null;
+  c = c.slice(fb);
+  const lb = c.lastIndexOf('}'); if (lb > 0) c = c.slice(0, lb + 1);
+  let out = '', inS = false, esc2 = false;
+  for (let i = 0; i < c.length; i++) {
+    const ch = c[i];
+    if (esc2) { if ('"\\/bfnrtu'.includes(ch)) out += '\\' + ch; else out += ch; esc2 = false; continue; }
+    if (ch === '\\') { esc2 = true; continue; }
+    if (ch === '"') { inS = !inS; out += ch; continue; }
+    if (inS) {
+      if (ch === '\n') out += '\\n';
+      else if (ch === '\r') out += '\\r';
+      else if (ch === '\t') out += '\\t';
+      else if (ch.charCodeAt(0) < 32) out += '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
+      else out += ch;
+      continue;
+    }
+    out += ch;
+  }
+  if (esc2) out += '\\';
+  if (inS) out += '"';
+  return out.replace(/,\s*([}\]])/g, '$1');
+}
+function closeUnbalanced(text) {
+  let inS = false, esc2 = false, depth = 0, arrDepth = 0;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (esc2) { esc2 = false; continue; }
+    if (ch === '\\') { esc2 = true; continue; }
+    if (ch === '"') { inS = !inS; continue; }
+    if (inS) continue;
+    if (ch === '{') depth++;
+    else if (ch === '}') depth--;
+    else if (ch === '[') arrDepth++;
+    else if (ch === ']') arrDepth--;
+  }
+  let out = text;
+  if (inS) out += '"';
+  if (esc2) out += '\\';
+  out = out.replace(/,\s*$/, '');
+  while (arrDepth > 0) { out += ']'; arrDepth--; }
+  while (depth > 0) { out += '}'; depth--; }
+  return out;
+}
+function tryParseJson(text) {
+  if (!text) return null;
+  const raw = String(text);
+  const objText = extractBalanced(raw, '{', '}');
+  if (objText) {
+    try { return JSON.parse(objText); } catch (e) {}
+    const rep = repairJson(objText);
+    if (rep) { try { return JSON.parse(rep); } catch (e) {} }
+  }
+  const arrText = extractBalanced(raw, '[', ']');
+  if (arrText) {
+    try { return JSON.parse(arrText); } catch (e) {}
+    try { return JSON.parse(repairJson(arrText)); } catch (e) {}
+  }
+  const rep2 = repairJson(raw);
+  if (rep2) { try { return JSON.parse(rep2); } catch (e) {} }
+  if (objText) {
+    for (let cut = objText.length - 1; cut > 50; cut -= 20) {
+      const closed = closeUnbalanced(objText.slice(0, cut));
+      try { return JSON.parse(closed); } catch (e) {}
+    }
+  }
+  return null;
+}
+function extractFieldsFromText(text) {
+  if (!text) return null;
+  const clean = String(text).replace(/[\u200B-\u200D\uFEFF\u00A0]/g, ' ').replace(/^\s*```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '');
+  const getStr = (key) => {
+    const patterns = [
+      new RegExp('"' + key + '"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"', 'i'),
+      new RegExp('\\b' + key + '\\b\\s*[:=]\\s*"((?:[^"\\\\]|\\\\.)*)"', 'i'),
+      new RegExp("\\b" + key + "\\b\\s*[:=]\\s*'((?:[^'\\\\]|\\\\.)*)'", 'i')
+    ];
+    for (const re of patterns) {
+      const m = clean.match(re);
+      if (m) return m[1].replace(/\\n/g, '\n').replace(/\\r/g, '').replace(/\\t/g, ' ').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+    }
+    return null;
+  };
+  const result = {};
+  let found = 0;
+  ['artist_guess','technique','brushwork','character_rendering','composition','atmosphere','distinctive','copy_prompt'].forEach(f => { const v = getStr(f); if (v) { result[f] = v; found++; } });
+  const paletteBlock = clean.match(/"palette"\s*:\s*\[([\s\S]*?)\]/i);
+  if (paletteBlock) {
+    const items = [];
+    const re = /\{\s*"?name"?\s*:\s*"([^"]*)"\s*,\s*"?hex"?\s*:\s*"([^"]*)"/gi;
+    let m; while ((m = re.exec(paletteBlock[1])) !== null) items.push({ name: m[1], hex: m[2] });
+    if (items.length) { result.palette = items; found++; }
+  }
+  const charsBlock = clean.match(/"characters"\s*:\s*\[([\s\S]*?)\]/i);
+  if (charsBlock) {
+    const items = []; const re = /"([^"]+)"/g; let m;
+    while ((m = re.exec(charsBlock[1])) !== null) items.push(m[1]);
+    if (items.length) { result.characters = items; found++; }
+  }
+  return found >= 2 ? result : null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// API
+// ═══════════════════════════════════════════════════════════════
+async function apiChat(system, user, label, maxTokens, temp) {
+  const key = getKey();
+  if (!key) throw new Error('Aucune clé API');
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 120000);
+  try {
+    const res = await fetch(API_BASE + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: MODEL_TEXT, messages: [{ role: 'system', content: sanitize(system) }, { role: 'user', content: sanitize(user) }], temperature: temp !== undefined ? temp : 0.4, max_tokens: maxTokens || 3500 }),
+      signal: controller.signal
+    });
+    clearTimeout(tid);
+    debug('CHAT ' + label + ' HTTP ' + res.status, res.ok ? 'ok' : 'err');
+    if (!res.ok) { const t = await res.text(); throw new Error('HTTP ' + res.status + ' ' + t.slice(0, 120)); }
+    const d = await res.json();
+    const ch = d.choices && d.choices[0];
+    const content = (ch && ch.message && (ch.message.content || ch.message.reasoning_content)) || null;
+    if (!content) debug('CHAT ' + label + ' : réponse vide', 'err', JSON.stringify(d).slice(0, 400));
+    return content;
+  } catch (e) { clearTimeout(tid); throw e; }
+}
+async function apiVision(system, user, imageUrl, label, maxTokens, temp) {
+  const key = getKey();
+  if (!key) throw new Error('Aucune clé API');
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 90000);
+  try {
+    const res = await fetch(API_BASE + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: MODEL_TEXT, messages: [{ role: 'system', content: sanitize(system) }, { role: 'user', content: [{ type: 'text', text: sanitize(user) }, { type: 'image_url', image_url: { url: imageUrl } }] }], temperature: temp !== undefined ? temp : 0.3, max_tokens: maxTokens || 2400 }),
+      signal: controller.signal
+    });
+    clearTimeout(tid);
+    debug('VISION ' + label + ' HTTP ' + res.status, res.ok ? 'ok' : 'err');
+    if (!res.ok) { const t = await res.text(); throw new Error('HTTP ' + res.status + ' ' + t.slice(0, 120)); }
+    const d = await res.json();
+    const ch = d.choices && d.choices[0];
+    const content = (ch && ch.message && (ch.message.content || ch.message.reasoning_content)) || null;
+    if (!content) debug('VISION ' + label + ' : réponse vide', 'err', JSON.stringify(d).slice(0, 400));
+    return content;
+  } catch (e) { clearTimeout(tid); throw e; }
+}
+async function apiImage(prompt) {
+  const key = getKey();
+  if (!key) throw new Error('Aucune clé API');
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (state.stopRequested) throw new Error('Arrêt');
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 90000);
+    try {
+      const body = { model: MODEL_IMAGE, prompt: sanitize(prompt), n: 1, size: IMAGE_SIZE, extra_body: { response_format: 'url' } };
+      const res = await fetch(API_BASE + '/images/generations', { method: 'POST', headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal });
+      clearTimeout(tid);
+      debug('IMG HTTP ' + res.status + ' · essai ' + (attempt + 1) + '/' + MAX_ATTEMPTS, res.ok ? 'ok' : 'warn');
+      if (res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504) { await sleep(Math.min(60, 6 + attempt * 6) * 1000); continue; }
+      if (!res.ok) {
+        const t = await res.text().catch(() => '');
+        if (attempt < MAX_ATTEMPTS - 1 && res.status < 500 && res.status !== 400) { await sleep(3000 + attempt * 2000); continue; }
+        throw new Error('HTTP ' + res.status + ' ' + t.slice(0, 100));
+      }
+      const d = await res.json();
+      const item = d.data && d.data[0];
+      if (item && item.url) return item.url;
+      if (item && item.b64_json) return 'data:image/png;base64,' + item.b64_json;
+      throw new Error('Réponse sans image');
+    } catch (e) {
+      clearTimeout(tid);
+      if (e.message === 'Arrêt' || state.stopRequested) throw new Error('Arrêt');
+      const isAbort = e.name === 'AbortError';
+      if (attempt < MAX_ATTEMPTS - 1) { await sleep(isAbort ? 5000 : 3000); continue; }
+      throw new Error(isAbort ? 'Timeout' : e.message);
+    }
+  }
+  throw new Error('Échec après ' + MAX_ATTEMPTS + ' tentatives');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ANALYSE
+// ═══════════════════════════════════════════════════════════════
+async function analyzeImage(dataUrl, index) {
+  const sys = [
+    'You are an expert art analyst. You analyze reference images and produce descriptions precise enough to perfectly recreate them.',
+    'Output ONLY valid JSON with these exact keys:',
+    'artist_guess, technique, brushwork, palette, character_rendering, characters, composition, atmosphere, distinctive, copy_prompt.',
+    'artist_guess: "the artist name if clearly recognizable, else unknown"',
+    'technique: "oil / watercolor / gouache / digital / ink / mixed media / photography / etc."',
+    'brushwork: "precise description of the brushwork, texture, line work"',
+    'palette: array of 6 objects {name, hex} — dominant colors with real hex codes',
+    'character_rendering: 40-60 words in ENGLISH. HOW are human figures depicted? Proportions, face treatment, skin rendering, hair, hands.',
+    'characters: array of short strings',
+    'composition: "framing, viewpoint"',
+    'atmosphere: "mood, lighting"',
+    'distinctive: "unique recurring visual elements"',
+    'copy_prompt: 180-220 words in ENGLISH — a complete prompt to recreate this image.',
+    'Output ONLY the JSON object.'
+  ].join(' ');
+  const usr = 'Analyze this reference image with EXTREME forensic precision. Output ONLY the JSON object.';
+  const raw = await apiVision(sys, usr, dataUrl, 'Img ' + (index + 1), 2800, 0.3);
+  state.lastRawResponse = raw || '';
+  if (!raw) throw new Error('Réponse vide');
+  let p = tryParseJson(raw);
+  if (!p) { debug('JSON direct échoué img ' + (index + 1) + ', fallback regex…', 'warn', raw.slice(0, 400)); p = extractFieldsFromText(raw); }
+  if (!p) throw new Error('JSON illisible');
+  return {
+    artist_guess: String(p.artist_guess || 'unknown'),
+    technique: String(p.technique || ''),
+    brushwork: String(p.brushwork || ''),
+    palette: Array.isArray(p.palette) ? p.palette.slice(0, 8).map(c => ({ name: String(c.name || ''), hex: normalizeHex(c.hex) })) : [],
+    character_rendering: String(p.character_rendering || ''),
+    characters: Array.isArray(p.characters) ? p.characters.map(String) : [],
+    composition: String(p.composition || ''),
+    atmosphere: String(p.atmosphere || ''),
+    distinctive: String(p.distinctive || ''),
+    copy_prompt: String(p.copy_prompt || '')
+  };
+}
+async function synthesizeStyle(analyses) {
+  const valid = analyses.filter(a => a);
+  if (valid.length === 0) throw new Error('Aucune analyse');
+  const sys = 'You are an expert art curator. You output only valid JSON.';
+  const user = [
+    'Here are ' + valid.length + ' analyses:',
+    valid.map((a, i) => '=== IMAGE ' + (i + 1) + ' ===\n' + JSON.stringify(a, null, 2)).join('\n\n'),
+    '',
+    'Synthesize into ONE unified style DNA. Output ONLY JSON with keys: name, palette, technique, brushwork, atmosphere, character_rendering, recurring_motifs.',
+    'palette: array of 6 objects {name, hex}',
+    'character_rendering: 40-60 words in ENGLISH.',
+    'recurring_motifs: array of strings in ENGLISH.',
+    'Output ONLY the JSON object.'
+  ].join('\n');
+  const raw = await apiChat(sys, user, 'Synthesis', 3000, 0.4);
+  state.lastRawResponse = raw || '';
+  let p = tryParseJson(raw);
+  if (!p) p = extractFieldsFromText(raw);
+  if (!p) throw new Error('JSON synthèse illisible');
+  return {
+    name: String(p.name || 'Style unifié'),
+    palette: Array.isArray(p.palette) ? p.palette.slice(0, 8).map(c => ({ name: String(c.name || ''), hex: normalizeHex(c.hex) })) : [],
+    technique: String(p.technique || ''),
+    brushwork: String(p.brushwork || ''),
+    atmosphere: String(p.atmosphere || ''),
+    character_rendering: String(p.character_rendering || ''),
+    recurring_motifs: Array.isArray(p.recurring_motifs) ? p.recurring_motifs.map(String) : []
+  };
+}
+async function blendCopyPrompts(analyses) {
+  const valid = analyses.filter(a => a && a.copy_prompt);
+  if (valid.length === 0) throw new Error('Aucun copy_prompt');
+  const copies = valid.map((a, i) => '--- COPY PROMPT ' + (i + 1) + ' (artist: ' + a.artist_guess + ') ---\n' + a.copy_prompt).join('\n\n');
+  const sys = 'You are a master art director. You fuse multiple stylistic descriptions into ONE single coherent artistic voice. You output only valid JSON.';
+  const user = [
+    'You have ' + valid.length + ' descriptions of reference images:',
+    copies,
+    '',
+    'Write ONE single continuous paragraph in ENGLISH (250-350 words) that FUSES these ' + valid.length + ' descriptions into a single unified visual style.',
+    'This paragraph is the PRIMARY, DOMINANT style instruction for an image generator.',
+    'It MUST describe: palette precisely, brushwork/texture, technique, atmosphere, HOW CHARACTERS ARE RENDERED (proportions, faces, skin, hair, hands), light/shadow, composition, distinctive elements.',
+    'Do NOT reference "image 1" — describe the style as a single coherent voice.',
+    'Do NOT list items — write flowing prose.',
+    'Also provide short_name (3-5 words) and palette_hex (array of 6 {name, hex}).',
+    'Output ONLY JSON with keys: short_name, palette_hex, fused_style_prompt.'
+  ].join('\n');
+  const raw = await apiChat(sys, user, 'Blend', 4000, 0.5);
+  state.lastRawResponse = raw || '';
+  let p = tryParseJson(raw);
+  if (!p) p = extractFieldsFromText(raw);
+  if (!p || !p.fused_style_prompt) throw new Error('Fusion invalide');
+  return {
+    short_name: String(p.short_name || 'Fused Style'),
+    palette_hex: Array.isArray(p.palette_hex) ? p.palette_hex.slice(0, 8).map(c => ({ name: String(c.name || ''), hex: normalizeHex(c.hex) })) : [],
+    fused_style_prompt: String(p.fused_style_prompt || '')
+  };
+}
+async function analyzeAll() {
+  if (state.apiKeys.length === 0) { toast('Ajoutez une clé API', 'error'); return; }
+  const loaded = state.images.filter(x => x).length;
+  if (loaded < 1) { toast('Chargez au moins 1 image', 'error'); return; }
+  $('analyzeBtn').disabled = true;
+  setStatus('Analyse…');
+  human('🔍 Analyse de ' + loaded + ' image(s)…');
+  $('analyzeStatus').className = 'status warn';
+  $('analyzeStatusText').textContent = 'Analyse en cours…';
+  try {
+    const analyses = [null, null, null, null];
+    for (let i = 0; i < 4; i++) {
+      if (!state.images[i]) continue;
+      $('analyzeStatusText').textContent = 'Analyse image ' + (i + 1) + ' / 4…';
+      try {
+        analyses[i] = await analyzeImage(state.images[i], i);
+        debug('Analyse img ' + (i + 1) + ' OK · ' + analyses[i].artist_guess, 'ok');
+      } catch (e) { debug('Analyse img ' + (i + 1) + ' échec : ' + e.message, 'err'); }
+      await sleep(400);
+    }
+    const valid = analyses.filter(a => a);
+    if (valid.length === 0) throw new Error('Aucune image analysée');
+    $('analyzeStatusText').textContent = 'Synthèse…';
+    human('🧠 Synthèse…');
+    const synthesis = await synthesizeStyle(analyses);
+    $('analyzeStatusText').textContent = 'Fusion des 4 prompts…';
+    human('🔮 Fusion…');
+    const blend = await blendCopyPrompts(analyses);
+    const styleDNA = { ...synthesis, global_style_prompt: blend.fused_style_prompt, blend_name: blend.short_name, blend_palette: blend.palette_hex };
+    const sess = createSession(styleDNA, analyses);
+    human('✨ Session « ' + sess.name + ' » créée · ' + blend.short_name);
+    $('analyzeStatus').className = 'status ok';
+    $('analyzeStatusText').textContent = valid.length + ' image(s) · « ' + sess.name + ' » prête';
+    toast('Session créée · ' + blend.short_name, 'success', 2500);
+    renderAnalysisUI();
+    renderSessionTabs();
+    renderWorksGrid();
+    updateButtons();
+  } catch (e) {
+    debug('Analyse échec : ' + e.message, 'err', state.lastRawResponse ? state.lastRawResponse.slice(0, 800) : '');
+    $('analyzeStatus').className = 'status err';
+    $('analyzeStatusText').textContent = 'Échec : ' + e.message;
+    toast('Analyse impossible : ' + e.message, 'error', 4000);
+  } finally {
+    $('analyzeBtn').disabled = false;
+    setStatus(null);
+    refreshSlots();
+    updateButtons();
+  }
+}
+function renderAnalysisUI() {
+  const sess = getCurrentSession();
+  if (!sess) { $('copyPromptsBox').classList.remove('visible'); $('dnaBox').classList.remove('visible'); return; }
+  const list = $('copyPromptsList');
+  list.innerHTML = '';
+  (sess.analyses || []).forEach((a, i) => {
+    if (!a) return;
+    const div = document.createElement('div');
+    div.className = 'cp-item';
+    div.innerHTML = '<div class="cp-title">Image ' + (i + 1) + ' — ' + esc(a.artist_guess || 'unknown') + '</div><button class="pcopy" data-copy="' + esc(a.copy_prompt) + '">Copier</button><div class="cp-body">' + esc(a.copy_prompt) + '</div>';
+    list.appendChild(div);
+  });
+  list.querySelectorAll('.pcopy').forEach(b => {
+    b.onclick = () => {
+      const ta = document.createElement('textarea');
+      ta.value = b.dataset.copy;
+      ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select();
+      let ok = false; try { ok = document.execCommand('copy'); } catch (er) {}
+      document.body.removeChild(ta);
+      toast(ok ? 'Prompt copié' : 'Copie impossible', ok ? 'success' : 'error', 1500);
+    };
+  });
+  $('copyPromptsBox').classList.add('visible');
+  const dna = sess.styleDNA || {};
+  let html = '';
+  html += '<span class="k">▸ STYLE FUSIONNÉ</span> ' + esc(dna.blend_name || dna.name || '') + '\n';
+  html += '<span class="k">▸ PARAGRAPHE FUSIONNÉ (dominant)</span>\n';
+  html += '<div class="fused">' + esc(dna.global_style_prompt || '(non disponible)') + '</div>\n';
+  if (dna.character_rendering) html += '<span class="k">▸ RENDU DES PERSONNAGES</span> ' + esc(dna.character_rendering) + '\n';
+  if (dna.technique) html += '<span class="k">▸ TECHNIQUE</span> ' + esc(dna.technique) + '\n';
+  if (dna.brushwork) html += '<span class="k">▸ PINCEAU</span> ' + esc(dna.brushwork) + '\n';
+  if (dna.atmosphere) html += '<span class="k">▸ ATMOSPHÈRE</span> ' + esc(dna.atmosphere) + '\n';
+  const palette = (dna.blend_palette && dna.blend_palette.length) ? dna.blend_palette : (dna.palette || []);
+  if (palette.length) html += '<span class="k">▸ PALETTE</span> ' + palette.filter(c => c.hex).map(c => '<span class="swatch" style="background:' + esc(c.hex) + '"></span>' + esc(c.hex)).join(' · ') + '\n';
+  if (dna.recurring_motifs && dna.recurring_motifs.length) html += '<span class="k">▸ MOTIFS</span> ' + dna.recurring_motifs.map(esc).join(', ') + '\n';
+  $('dnaBox').innerHTML = html;
+  $('dnaBox').classList.add('visible');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WORKS — chaque œuvre reçoit une garde-robe unique
+// ═══════════════════════════════════════════════════════════════
+function buildInitialWorks() {
+  const works = [];
+  const now = Date.now();
+  const push = (cat, item, i) => {
+    works.push({
+      id: 'init_' + cat + '_' + i + '_' + now + '_' + Math.random().toString(36).slice(2, 6),
+      title: item.name, elements: [item], category: cat, key: item.id,
+      wardrobe: pickWardrobe(),
+      createdAt: now + i
+    });
+  };
+  CHARACTERS.forEach((c, i) => push('Personnage', c, i));
+  PLACES.forEach((c, i) => push('Lieu', c, i + 10));
+  HOUSES.forEach((c, i) => push('Maison', c, i + 20));
+  FUNNY_SCENES.forEach((c, i) => push('Drôle', c, i + 30));
+  BEAUTIFUL_SCENES.forEach((c, i) => push('Magnifique', c, i + 40));
+  SPECIALS.slice(0, 5).forEach((c, i) => push('Spécial', c, i + 50));
+  INITIAL_COMBOS.forEach((combo, i) => {
+    const key = combo.map(x => x.id).sort().join('+');
+    works.push({
+      id: 'init_combo_' + i + '_' + now,
+      title: combo.map(x => x.name).join(' · '),
+      elements: combo, category: 'Combiné', key: key,
+      wardrobe: pickWardrobe(),
+      createdAt: now + 60 + i
+    });
+  });
+  return works;
+}
+function getAllItems() { return [...CHARACTERS, ...PLACES, ...HOUSES, ...FUNNY_SCENES, ...BEAUTIFUL_SCENES, ...SPECIALS]; }
+function usedKeysOfSession(sess) { const s = new Set(); (sess.works || []).forEach(w => { if (w.key) s.add(w.key); }); return s; }
+function generateMoreCombinations(sess, count) {
+  const allItems = getAllItems();
+  const used = usedKeysOfSession(sess);
+  const works = [];
+  let attempts = 0;
+  const now = Date.now();
+  while (works.length < count && attempts < 5000) {
+    attempts++;
+    const numItems = Math.random() < 0.35 ? 1 : (Math.random() < 0.7 ? 2 : 3);
+    const picks = [];
+    const usedCats = new Set();
+    let safety = 0;
+    while (picks.length < numItems && safety < 20) {
+      safety++;
+      const item = allItems[Math.floor(Math.random() * allItems.length)];
+      if (usedCats.has(item.cat)) continue;
+      usedCats.add(item.cat);
+      picks.push(item);
+    }
+    if (picks.length === 0) continue;
+    const key = picks.map(p => p.id).sort().join('+');
+    if (used.has(key)) continue;
+    used.add(key);
+    works.push({
+      id: 'gen_' + now + '_' + works.length + '_' + Math.random().toString(36).slice(2, 6),
+      title: picks.map(p => p.name).join(' · '),
+      elements: picks, category: 'Combiné', key: key,
+      wardrobe: pickWardrobe(),
+      createdAt: now + works.length
+    });
+  }
+  return works;
+}
+function assignArtists(batch) { const artists = shuffleArray(FAMOUS_ARTISTS); batch.forEach((w, i) => { w.artist = artists[i % artists.length]; }); }
+
+// ═══════════════════════════════════════════════════════════════
+// PROMPT BUILDER — vêtements décrits comme OBJETS CONCRETS
+// ═══════════════════════════════════════════════════════════════
+function buildImagePrompt(work, sess) {
+  const dna = sess.styleDNA || {};
+  const analyses = (sess.analyses || []).filter(a => a && a.copy_prompt);
+  const P = [];
+
+  // 1. FUSED STYLE — dominant
+  P.push('════════ FUSED STYLE — MANDATORY, MUST DOMINATE EVERYTHING ════════');
+  if (dna.global_style_prompt) P.push(dna.global_style_prompt);
+  P.push('');
+
+  // 2. REFERENCE VOICES
+  if (analyses.length > 0) {
+    P.push('════════ REFERENCE VOICES — EACH CONTRIBUTES ITS DISTINCTIVE FORCE ════════');
+    analyses.forEach((a, i) => {
+      P.push('--- VOICE ' + (i + 1) + ' (artist: ' + (a.artist_guess || 'unknown') + ') ---');
+      P.push(a.copy_prompt);
+      P.push('');
+    });
+    P.push('BLEND: The fused style above is DOMINANT. Each voice contributes its distinctive strength. Result must feel like ONE coherent artwork absorbing all voices.');
+    P.push('');
+  }
+
+  // 3. CHARACTER RENDERING
+  if (dna.character_rendering) {
+    P.push('════════ CHARACTER RENDERING ════════');
+    P.push(dna.character_rendering);
+    P.push('');
+  }
+
+  // 4. PALETTE
+  const palette = (dna.blend_palette && dna.blend_palette.length) ? dna.blend_palette : (dna.palette || []);
+  if (palette.length) {
+    P.push('════════ PALETTE ════════');
+    P.push(palette.filter(c => c.hex || c.name).map(c => '• ' + (c.hex || '') + ' ' + (c.name || '')).join('\n'));
+    P.push('');
+  }
+
+  // 5. CLOTHING — CONCRETE GARMENT TYPES (jamais de mots de style)
+  P.push('════════ CLOTHING — CONCRETE GARMENT TYPES ════════');
+  P.push('The figure wears these EXACT garment types (concrete objects, not stylistic adjectives):');
+  const wardrobe = (work.wardrobe && work.wardrobe.length > 0) ? work.wardrobe : pickWardrobe();
+  wardrobe.forEach(w => P.push('• ' + w.item));
+  P.push('');
+  P.push('IMPORTANT: Each garment is a CONCRETE, RECOGNIZABLE OBJECT — a real robe, a real spacesuit, a real tailored jacket, a real monk robe, a real pair of combat boots.');
+  P.push('The FUSED STYLE (defined at the top) decides HOW these garments are painted (brushwork, palette, distortions).');
+  P.push('The garments themselves are NOT described in style words — they are described as physical clothing items.');
+  P.push('');
+
+  // 6. POSE & EXPRESSION
+  P.push('════════ POSE & EXPRESSION ════════');
+  P.push('- Pose: contorted, asymmetric, unexpected. One arm bent behind the back, hip cocked sharply, head tilted, one leg raised. NEVER symmetric or standard.');
+  P.push('- Expression: strange, twisted, wide-eyed, asymmetric. Mouth slightly off, eyes placed unexpectedly, one brow raised. A fever-dream face, not a portrait.');
+  P.push('- Decor: MINIMALIST and SPARSE. Empty space, one single object, uncluttered background. The decor serves the character, never competes.');
+  P.push('');
+
+  // 7. SUBJECT
+  P.push('════════ SUBJECT — PAINTED ENTIRELY IN THE FUSED STYLE ════════');
+  work.elements.forEach(e => P.push('• ' + e.prompt));
+  P.push('');
+
+  // 8. STYLE ENFORCEMENT
+  P.push('════════ STYLE ENFORCEMENT ════════');
+  P.push('- Hand-painted artwork, never photorealistic.');
+  P.push('- Every face, hand, cloth, architectural detail shows the fused style.');
+  P.push('- If the fused style uses elongated proportions, characters have them.');
+  P.push('- If it dissolves forms into brushstrokes, characters dissolve into brushstrokes.');
+  P.push('- The STYLE dominates the SUBJECT.');
+  P.push('');
+
+  // 9. ARTIST MIX
+  if (work.artist) {
+    P.push('════════ ARTIST MIX — ' + work.artist.name.toUpperCase() + ' ════════');
+    P.push('Blend the fused style with ' + work.artist.name + '\'s approach.');
+    P.push(work.artist.name + ' signature: ' + work.artist.style + '.');
+    P.push('Fused style stays dominant; artist inflects the treatment.');
+    P.push('');
+  }
+
+  // 10. RULES
+  P.push('════════ ABSOLUTE RULES ════════');
+  P.push('- Hand-painted ARTWORK, not a photograph, not CGI, not 3D.');
+  P.push('- Vertical 9:16 composition.');
+  P.push('- NO text, NO watermark, NO signature.');
+  P.push('- FIGURES FULLY CLOTHED. No nudity, no explicit content.');
+  return P.join('\n');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════
+function renderSessionTabs() {
+  const tabs = $('sessionTabs');
+  tabs.innerHTML = '';
+  if (state.sessions.length === 0) { tabs.style.display = 'none'; return; }
+  tabs.style.display = 'flex';
+  const sorted = state.sessions.slice().sort((a, b) => b.createdAt - a.createdAt);
+  sorted.forEach(sess => {
+    const tab = document.createElement('div');
+    tab.className = 'session-tab' + (sess.id === state.currentSessionId ? ' active' : '');
+    tab.innerHTML = '<span>' + esc(sess.name) + ' · ' + esc(sess.dateLabel || '') + '</span><span class="tab-count">' + (sess.works || []).length + '</span><button class="tab-close" data-del="' + sess.id + '">✕</button>';
+    tab.onclick = (e) => { if (e.target.classList.contains('tab-close')) return; if (sess.id !== state.currentSessionId) switchSession(sess.id); };
+    tabs.appendChild(tab);
+  });
+  tabs.querySelectorAll('[data-del]').forEach(b => { b.onclick = (e) => { e.stopPropagation(); deleteSession(b.dataset.del); }; });
+}
+function renderPagination(totalPages) {
+  const build = (container) => {
+    if (!container) return;
+    container.innerHTML = '';
+    if (totalPages <= 1) return;
+    const prev = document.createElement('button');
+    prev.textContent = '◀ Préc.';
+    prev.disabled = state.currentPage === 0;
+    prev.onclick = () => { state.currentPage--; renderWorksGrid(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    const info = document.createElement('span');
+    info.className = 'page-info';
+    info.textContent = 'Page ' + (state.currentPage + 1) + ' / ' + totalPages;
+    const next = document.createElement('button');
+    next.textContent = 'Suiv. ▶';
+    next.disabled = state.currentPage >= totalPages - 1;
+    next.onclick = () => { state.currentPage++; renderWorksGrid(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    container.appendChild(prev); container.appendChild(info); container.appendChild(next);
+  };
+  build($('pagination'));
+  build($('paginationBottom'));
+}
+function workCardHTML(work, sess) {
+  let imgHtml;
+  if (work.imageUrl) imgHtml = '<img src="' + work.imageUrl + '" loading="lazy" alt="">';
+  else if (work.error) imgHtml = '<div class="err">✕ Échec<br><small>' + esc(trunc(work.error, 80)) + '</small><button class="mini-btn" data-retry="' + work.id + '">Réessayer</button></div>';
+  else imgHtml = '<div class="load"><span style="font-size:1.4rem">🎨</span>' + esc(work.title) + '<button class="mini-btn" data-gen="' + work.id + '">Générer</button></div>';
+  const statusBadge = work.imageUrl ? '<span class="pbadge gen">✓ Faite</span>' : (work.error ? '' : '<span class="pbadge" style="background:rgba(232,123,53,.1);color:#e87b35;border-color:#8b5a2b;">En attente</span>');
+  const artistBadge = work.artist ? '<span class="pbadge art">🎨 ' + esc(work.artist.name) + '</span>' : '';
+  const outfitBadge = wardrobeLabel(work.wardrobe) ? '<span class="pbadge outfit">👗 ' + esc(wardrobeLabel(work.wardrobe)) + '</span>' : '';
+  const fullPrompt = buildImagePrompt(work, sess);
+  const outfitSummary = (work.wardrobe || []).map(w => esc(w.item)).join(' · ');
+  return '<div class="photo-img">' + imgHtml + '</div>' +
+    '<div class="photo-meta">' +
+    '<div><span class="pbadge cat">✦ ' + esc(work.category) + '</span>' + artistBadge + outfitBadge + statusBadge + '</div>' +
+    '<div class="ptitle">' + esc(work.title) + '</div>' +
+    (outfitSummary ? '<div class="poutfit">' + outfitSummary + '</div>' : '') +
+    '<div class="pblock"><div class="plabel">📸 Prompt</div><button class="pcopy" data-copy="' + esc(fullPrompt) + '">Copier</button><div class="ptext">' + esc(fullPrompt) + '</div></div>' +
+    (work.imageUrl ? '<a class="popen" href="' + work.imageUrl + '" target="_blank" rel="noopener">Ouvrir</a>' : '') +
+    '</div>';
+}
+function attachCardHandlers(card, sess) {
+  card.querySelectorAll('[data-copy]').forEach(b => {
+    b.onclick = (e) => {
+      e.stopPropagation();
+      const ta = document.createElement('textarea');
+      ta.value = b.dataset.copy;
+      ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select();
+      let ok = false; try { ok = document.execCommand('copy'); } catch (er) {}
+      document.body.removeChild(ta);
+      toast(ok ? 'Copié' : 'Copie impossible', ok ? 'success' : 'error', 1500);
+    };
+  });
+  card.querySelectorAll('[data-gen]').forEach(b => { b.onclick = (e) => { e.stopPropagation(); generateOne(b.dataset.gen); }; });
+  card.querySelectorAll('[data-retry]').forEach(b => { b.onclick = (e) => { e.stopPropagation(); const w = sess.works.find(x => x.id === b.dataset.retry); if (w) { w.error = null; w.imageUrl = null; updateWorkCard(w, sess); generateOne(w.id); } }; });
+}
+function renderWorksGrid() {
+  const sess = getCurrentSession();
+  const grid = $('photoGrid');
+  grid.innerHTML = '';
+  state.workCards.clear();
+  renderSessionTabs();
+  if (!sess) { grid.innerHTML = '<div class="empty-state">Aucune session active. Chargez 4 images et cliquez sur <strong>Analyser</strong>.</div>'; renderPagination(1); updateCounts(); return; }
+  const works = sess.works || [];
+  if (works.length === 0) { grid.innerHTML = '<div class="empty-state">Session « ' + esc(sess.name) + ' » prête. Cliquez sur <strong>Générer 40 œuvres</strong>.</div>'; renderPagination(1); updateCounts(); return; }
+  const sorted = works.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  const totalPages = Math.ceil(sorted.length / PAGE_SIZE) || 1;
+  if (state.currentPage >= totalPages) state.currentPage = totalPages - 1;
+  if (state.currentPage < 0) state.currentPage = 0;
+  const pageStart = state.currentPage * PAGE_SIZE;
+  sorted.slice(pageStart, pageStart + PAGE_SIZE).forEach(work => {
+    const card = document.createElement('div');
+    card.className = 'photo ' + (work.imageUrl ? 'done' : (work.error ? 'error' : 'pending'));
+    card.dataset.wid = work.id;
+    card.innerHTML = workCardHTML(work, sess);
+    grid.appendChild(card);
+    state.workCards.set(work.id, card);
+    attachCardHandlers(card, sess);
+  });
+  renderPagination(totalPages);
+  updateCounts();
+}
+function updateWorkCard(work, sess) {
+  const card = state.workCards.get(work.id);
+  if (!card) return;
+  card.className = 'photo ' + (work.imageUrl ? 'done' : (work.error ? 'error' : 'pending'));
+  card.innerHTML = workCardHTML(work, sess);
+  attachCardHandlers(card, sess);
+  updateCounts();
+  saveSessions();
+}
+function updateCounts() {
+  const sess = getCurrentSession();
+  if (!sess) {
+    $('sessionInfo').textContent = '—'; $('totalCount').textContent = '0 / 0'; $('queueCount').textContent = '0';
+    $('resultsCount').textContent = state.sessions.length + ' session' + (state.sessions.length > 1 ? 's' : '');
+    $('progressFill').style.width = '0%';
+    updateButtons();
+    return;
+  }
+  const works = sess.works || [];
+  const done = works.filter(w => w.imageUrl).length;
+  $('sessionInfo').textContent = sess.name;
+  $('totalCount').textContent = done + ' / ' + works.length;
+  $('queueCount').textContent = state.isRunning ? (works.length - done) : '0';
+  $('resultsCount').textContent = state.sessions.length + ' session' + (state.sessions.length > 1 ? 's' : '');
+  const pct = works.length > 0 ? Math.round((done / works.length) * 100) : 0;
+  const fill = $('progressFill');
+  fill.style.width = pct + '%';
+  fill.classList.toggle('done', pct >= 100);
+  updateButtons();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GÉNÉRATION
+// ═══════════════════════════════════════════════════════════════
+async function generateOne(workId) {
+  const sess = getCurrentSession();
+  if (!sess) return;
+  const work = (sess.works || []).find(w => w.id === workId);
+  if (!work) return;
+  if (work.imageUrl) { toast('Déjà générée', 'warn'); return; }
+  if (state.apiKeys.length === 0) { toast('Ajoutez une clé API', 'error'); return; }
+  if (!work.wardrobe || work.wardrobe.length === 0) work.wardrobe = pickWardrobe();
+  const card = state.workCards.get(work.id);
+  if (card) card.classList.add('generating');
+  work.error = null;
+  try {
+    const url = await apiImage(buildImagePrompt(work, sess));
+    work.imageUrl = url;
+    human('🎨 ' + work.title + ' ✓');
+    debug('✔ ' + work.title, 'ok');
+  } catch (e) {
+    if (e.message === 'Arrêt') return;
+    work.error = e.message;
+    human('✘ ' + work.title + ' · ' + e.message);
+    debug('✘ ' + work.title + ' · ' + e.message, 'err');
+  }
+  updateWorkCard(work, sess);
+}
+async function generateAllPending() {
+  if (state.isRunning) return;
+  const sess = getCurrentSession();
+  if (!sess) { toast('Aucune session active', 'error'); return; }
+  if (state.apiKeys.length === 0) { toast('Ajoutez une clé API', 'error'); return; }
+  const pending = (sess.works || []).filter(w => !w.imageUrl);
+  if (pending.length === 0) { toast('Toutes les œuvres sont générées', 'warn'); return; }
+  state.isRunning = true;
+  state.stopRequested = false;
+  state.keyIndex = 0;
+  updateButtons();
+  human('✦ Génération de ' + pending.length + ' œuvre(s)…');
+  setStatus('Génération en cours…');
+  const nKeys = state.apiKeys.length;
+  const lastStartPerKey = {};
+  let idx = 0;
+  async function worker(slot) {
+    while (!state.stopRequested && idx < pending.length) {
+      const myIdx = idx++;
+      const work = pending[myIdx];
+      if (!work) return;
+      if (!work.wardrobe || work.wardrobe.length === 0) work.wardrobe = pickWardrobe();
+      const keySlot = slot % nKeys;
+      const now = Date.now();
+      const wait = Math.max(0, (lastStartPerKey[keySlot] || 0) + DELAY_PER_KEY_MS - now);
+      lastStartPerKey[keySlot] = Date.now() + wait;
+      if (wait > 0) await sleep(wait);
+      if (state.stopRequested) return;
+      const card = state.workCards.get(work.id);
+      if (card) card.classList.add('generating');
+      work.error = null;
+      try {
+        work.imageUrl = await apiImage(buildImagePrompt(work, sess));
+        human('🎨 ' + work.title + ' ✓');
+        debug('✔ ' + work.title, 'ok');
+      } catch (e) {
+        if (e.message === 'Arrêt') return;
+        work.error = e.message;
+        debug('✘ ' + work.title + ' · ' + e.message, 'err');
+      }
+      updateWorkCard(work, sess);
+    }
+  }
+  await Promise.all(Array.from({ length: nKeys }, (_, i) => worker(i)));
+  state.isRunning = false;
+  state.stopRequested = false;
+  setStatus(null);
+  updateButtons();
+  const done = sess.works.filter(w => w.imageUrl).length;
+  toast(done + ' / ' + sess.works.length + ' œuvre(s) générée(s)', 'success', 3500);
+  saveSessions();
+}
+async function generateInitial40() {
+  const sess = getCurrentSession();
+  if (!sess) { toast('Analysez d\'abord les images', 'error'); return; }
+  if ((sess.works || []).length > 0) { toast('Cette session a déjà des œuvres.', 'warn'); return; }
+  const batch = buildInitialWorks();
+  if (state.mixArtists) assignArtists(batch);
+  sess.works = batch;
+  saveSessions();
+  renderWorksGrid();
+  human('✦ 40 œuvres créées dans ' + sess.name);
+  await generateAllPending();
+}
+async function continueGeneration() {
+  if (state.isRunning) return;
+  const sess = getCurrentSession();
+  if (!sess) { toast('Aucune session active', 'error'); return; }
+  if ((sess.works || []).length === 0) { toast('Générez d\'abord 40 œuvres', 'warn'); return; }
+  const batch = generateMoreCombinations(sess, 40);
+  if (batch.length === 0) { toast('Impossible de trouver de nouvelles combinaisons', 'warn'); return; }
+  if (state.mixArtists) assignArtists(batch);
+  sess.works.push(...batch);
+  state.currentPage = 0;
+  saveSessions();
+  renderWorksGrid();
+  human('✦ +' + batch.length + ' nouvelles combinaisons · total ' + sess.works.length);
+  await generateAllPending();
+}
+function stopGeneration() { if (!state.isRunning) return; state.stopRequested = true; human('⏹ Arrêt demandé…'); }
+
+// ═══════════════════════════════════════════════════════════════
+// BUTTONS
+// ═══════════════════════════════════════════════════════════════
+function updateButtons() {
+  const hasKey = state.apiKeys.length > 0;
+  const loaded = state.images.filter(x => x).length;
+  const sess = getCurrentSession();
+  const hasSession = !!sess;
+  const hasWorks = sess && (sess.works || []).length > 0;
+  $('analyzeBtn').disabled = !hasKey || loaded < 1 || state.isRunning;
+  $('genBtn').disabled = !hasKey || !hasSession || hasWorks || state.isRunning;
+  $('continueBtn').disabled = !hasKey || !hasSession || !hasWorks || state.isRunning;
+  $('stopBtn').disabled = !state.isRunning;
+  if (state.isRunning) {
+    $('genBtn').textContent = 'Génération…';
+    $('continueBtn').textContent = 'Génération…';
+  } else {
+    $('genBtn').textContent = hasWorks ? '✦ Générées' : '✦ Générer 40 œuvres';
+    $('continueBtn').textContent = '＋ Continuer (+40)';
+  }
+  const info = $('controlInfo');
+  if (!hasKey) info.innerHTML = 'Ajoutez au moins une clé API Agnes.';
+  else if (loaded < 4) info.innerHTML = '<span class="sel">' + loaded + ' / 4</span> image(s) chargée(s). Chargez 4 images pour une fusion optimale.';
+  else if (!hasSession) info.innerHTML = '<span class="sel">4 / 4</span> images chargées. Cliquez sur <strong>Analyser</strong> pour créer une session.';
+  else if (!hasWorks) info.innerHTML = 'Session <strong>' + esc(sess.name) + '</strong> prête. Cliquez sur <strong>Générer 40 œuvres</strong>.';
+  else {
+    const done = sess.works.filter(w => w.imageUrl).length;
+    info.innerHTML = 'Session <strong>' + esc(sess.name) + '</strong> · <span class="sel">' + sess.works.length + '</span> œuvres · <span class="sel">' + done + '</span> générées.';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BIND
+// ═══════════════════════════════════════════════════════════════
+function bind() {
+  $('validateBtn').onclick = validateAndSaveKeys;
+  $('clearKeysBtn').onclick = () => {
+    $('keysInput').value = '';
+    state.apiKeys = [];
+    storageDel(KEYS_STORAGE);
+    $('keyStatus').className = 'status';
+    $('keyStatusText').textContent = 'Aucune clé enregistrée';
+    $('keyBadge').textContent = '0 validée';
+    updateButtons();
+    toast('Clés effacées', 'warn');
+  };
+  $('analyzeBtn').onclick = analyzeAll;
+  $('mixArtistsToggle').onchange = (e) => { state.mixArtists = e.target.checked; toast(state.mixArtists ? 'Mode mélange artistes activé' : 'Mode mélange désactivé', 'success', 1500); };
+  $('genBtn').onclick = generateInitial40;
+  $('continueBtn').onclick = continueGeneration;
+  $('stopBtn').onclick = stopGeneration;
+
+  const handle = $('panelHandle');
+  const content = $('panelContent');
+  const toggle = $('panelToggle');
+  let open = false;
+  handle.onclick = (e) => {
+    if (e.target.tagName === 'BUTTON') return;
+    open = !open;
+    content.classList.toggle('hidden', !open);
+    toggle.textContent = (open ? '▲' : '▼') + ' CONSOLE';
+  };
+  $('copyConsoleBtn').onclick = (e) => {
+    e.stopPropagation();
+    const txt = state.debugLog.map(d => d.t + ' ' + d.m + (d.raw ? '\n' + d.raw : '')).join('\n');
+    const ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (er) {}
+    document.body.removeChild(ta);
+    toast(ok ? 'Console copiée' : 'Copie impossible', ok ? 'success' : 'error', 1500);
+  };
+  $('clearConsoleBtn').onclick = (e) => { e.stopPropagation(); state.debugLog = []; renderDebug(); toast('Console effacée', 'warn', 1200); };
+
+  try {
+    const saved = JSON.parse(storageGet(KEYS_STORAGE) || '[]');
+    if (Array.isArray(saved) && saved.length > 0) {
+      state.apiKeys = saved.filter(isValidKey);
+      $('keysInput').value = saved.join('\n');
+      if (state.apiKeys.length > 0) {
+        $('keyStatus').className = 'status ok';
+        $('keyStatusText').textContent = state.apiKeys.length + ' clé(s) restaurée(s)';
+        $('keyBadge').textContent = state.apiKeys.length + ' validée' + (state.apiKeys.length > 1 ? 's' : '');
+        $('rpmInfo').textContent = 'RPM cap ≈ ' + (state.apiKeys.length * 12);
+      }
+    }
+  } catch (e) {}
+  try {
+    const refsRaw = storageGet(REFS_STORAGE);
+    if (refsRaw) {
+      const d = JSON.parse(refsRaw);
+      if (d && Array.isArray(d.images)) {
+        state.images = d.images.slice(0, 4);
+        state.imageNames = (d.names || ['', '', '', '']).slice(0, 4);
+      }
+    }
+  } catch (e) {}
+  loadSessions();
+  setInterval(() => { try { saveSessions(); } catch (e) {} }, 5000);
+  refreshSlots();
+  renderSessionTabs();
+  renderWorksGrid();
+  renderAnalysisUI();
+  updateButtons();
+  human('✦ Egon Multi-Ref Lab v4 prêt · ' + state.sessions.length + ' session(s) · garde-robe active');
+  debug('Multi-Ref Lab v4 · ' + Object.keys(WARDROBE).length + ' familles de vêtements · ' + Object.values(WARDROBE).reduce((a, b) => a + b.length, 0) + ' pièces au total', 'api');
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+else bind();
+</script>
+</body>
+</html>
