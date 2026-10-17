@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Egon Multi-Ref Lab — 4 refs → 40 œuvres</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;background:#1a0f0a;color:#e8dcc8;min-height:100vh;padding:1rem 1rem 14rem;font-size:14px;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto}
+header{text-align:center;padding:1.5rem 0;border-bottom:1px solid #3d2418;margin-bottom:1.5rem}
+h1{font-family:Georgia,serif;font-size:2.4rem;font-weight:300;letter-spacing:.02em;margin-bottom:.4rem;background:linear-gradient(135deg,#c44536 0%,#e87b35 25%,#e5c15a 50%,#a88b4a 75%,#8b5a2b 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1.05}
+.sub{font-family:Georgia,serif;font-style:italic;font-size:.85rem;color:#8a7a5c}
+.kata{font-size:.7rem;letter-spacing:.4em;color:#e5c15a;opacity:.75;text-transform:uppercase;margin-bottom:.5rem}
+.banner{background:linear-gradient(135deg,rgba(196,69,54,.08),rgba(139,90,43,.06));border:1px solid #3d2418;border-left:3px solid #c44536;border-radius:4px;padding:1rem 1.15rem;font-size:.78rem;color:#a89578;margin-bottom:1.2rem;line-height:1.65;font-family:Georgia,serif}
+.banner strong{color:#e8dcc8}
+.hl-r{color:#e87b35}.hl-y{color:#e5c15a}.hl-g{color:#a88b4a}
+.card{background:#231409;border:1px solid #3d2418;border-radius:4px;margin-bottom:1rem;overflow:hidden}
+.card-head{padding:.85rem 1rem;border-bottom:1px solid #3d2418;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;text-transform:uppercase;letter-spacing:.15em;color:#d4c5a8;font-weight:600;font-family:Georgia,serif}
+.card-head .badge{font-size:.6rem;padding:.15rem .5rem;border:1px solid #8b5a2b;color:#e5c15a;border-radius:2px;letter-spacing:.1em;background:rgba(139,90,43,.15)}
+.card-body{padding:1rem}
+textarea,input[type=text]{width:100%;background:#150c06;border:1px solid #3d2418;border-radius:4px;padding:.7rem .85rem;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:.78rem;color:#e8dcc8;outline:none}
+textarea:focus,input:focus{border-color:#c44536;box-shadow:0 0 0 3px rgba(196,69,54,.15)}
+textarea{min-height:80px;resize:vertical;line-height:1.55}
+.btn{width:100%;padding:.75rem;border-radius:4px;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .15s;font-family:Georgia,serif}
+.btn-amber{background:linear-gradient(135deg,rgba(232,123,53,.18),rgba(229,193,90,.1));border-color:#8b5a2b;color:#e5c15a}
+.btn-amber:hover:not(:disabled){background:rgba(232,123,53,.28)}
+.btn-amber:disabled{opacity:.3;cursor:not-allowed}
+.btn-slate{background:transparent;border-color:#3d2418;color:#a89578;font-size:.66rem;padding:.5rem;font-family:-apple-system,sans-serif}
+.btn-slate:hover:not(:disabled){color:#e87b35;border-color:#8b5a2b}
+.btn-slate:disabled{opacity:.3;cursor:not-allowed}
+.btn-mega{background:linear-gradient(135deg,#c44536,#8b5a2b,#e5c15a);border:none;color:#1a0f0a;padding:1rem;font-size:.85rem;letter-spacing:.18em;border-radius:5px;box-shadow:0 4px 20px rgba(196,69,54,.3);font-family:Georgia,serif;font-weight:700}
+.btn-mega:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 28px rgba(196,69,54,.5)}
+.btn-mega:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-success{background:linear-gradient(135deg,rgba(16,185,129,.25),rgba(52,211,153,.15));border:1px solid #065f46;color:#34d399;width:100%;padding:1rem;border-radius:5px;font-size:.85rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;font-family:Georgia,serif}
+.btn-success:hover:not(:disabled){background:rgba(16,185,129,.35)}
+.btn-success:disabled{opacity:.35;cursor:not-allowed}
+.row{display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}
+.row .btn{width:auto;flex:1;min-width:100px}
+.status{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;background:#150c06;border:1px solid #3d2418;border-radius:4px;font-size:.72rem;color:#8a7a5c;margin-top:.5rem}
+.status.ok{background:rgba(16,185,129,.08);border-color:#065f46;color:#34d399}
+.status.err{background:rgba(196,69,54,.1);border-color:#7f1d1d;color:#f87171}
+.status.warn{background:rgba(229,193,90,.08);border-color:#8b5a2b;color:#e5c15a}
+.status .dot{width:6px;height:6px;border-radius:50%;background:#4a3828;flex-shrink:0}
+.status.ok .dot{background:#10b981;box-shadow:0 0 6px #10b981}
+.status.err .dot{background:#c44536}
+.status.warn .dot{background:#e5c15a}
+.hint{font-size:.68rem;color:#8a7a5c;margin-top:.4rem;font-family:Georgia,serif;font-style:italic}
+.images-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem}
+@media(min-width:720px){.images-grid{grid-template-columns:1fr 1fr 1fr 1fr}}
+.slot{border:2px dashed #4a3828;border-radius:4px;padding:1rem .6rem;text-align:center;cursor:pointer;position:relative;transition:all .15s;background:#150c06;min-height:170px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.4rem}
+.slot:hover{border-color:#c44536;background:rgba(196,69,54,.04)}
+.slot.filled{border-style:solid;border-color:#8b5a2b;padding:.4rem}
+.slot.analyzed{border-color:#10b981}
+.slot input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.slot .icon{font-size:1.6rem;opacity:.5}
+.slot .txt{font-size:.72rem;color:#a89578;font-family:Georgia,serif}
+.slot .txt strong{color:#e5c15a}
+.slot .num{font-size:.6rem;color:#5a4838;font-family:ui-monospace,monospace;letter-spacing:.1em}
+.slot img{max-width:100%;max-height:180px;border-radius:3px;display:block}
+.slot .rm{position:absolute;top:4px;right:4px;background:rgba(196,69,54,.8);color:#fff;border:none;border-radius:3px;width:22px;height:22px;font-size:.7rem;cursor:pointer;z-index:2}
+.slot .badge-ok{position:absolute;top:4px;left:4px;background:rgba(16,185,129,.9);color:#fff;border-radius:3px;padding:.15rem .4rem;font-size:.55rem;letter-spacing:.1em;font-weight:700}
+.copy-prompts{background:#150c06;border:1px solid #3d2418;border-radius:4px;padding:.7rem;margin-top:.7rem;display:none}
+.copy-prompts.visible{display:block}
+.copy-prompts h4{font-family:Georgia,serif;font-size:.85rem;color:#e5c15a;margin-bottom:.5rem;font-style:italic}
+.cp-item{background:#0a0603;border:1px solid #3d2418;border-radius:3px;padding:.5rem;margin-bottom:.4rem;position:relative}
+.cp-item .cp-title{font-size:.7rem;color:#e5c15a;font-family:Georgia,serif;font-weight:700;margin-bottom:.3rem}
+.cp-item .cp-body{font-size:.62rem;color:#a89578;font-family:ui-monospace,monospace;line-height:1.5;max-height:120px;overflow-y:auto;white-space:pre-wrap;padding-right:3.5rem}
+.cp-item .pcopy{position:absolute;top:.4rem;right:.4rem;font-size:.55rem;padding:.15rem .4rem;border:1px solid #3d2418;border-radius:2px;background:transparent;color:#8a7a5c;cursor:pointer}
+.cp-item .pcopy:hover{color:#e5c15a;border-color:#8b5a2b}
+.dna-box{background:#150c06;border:1px solid #3d2418;border-left:3px solid #e5c15a;border-radius:4px;padding:.8rem;margin-top:.7rem;font-size:.72rem;color:#a89578;font-family:ui-monospace,monospace;line-height:1.55;display:none;white-space:pre-wrap;max-height:400px;overflow-y:auto}
+.dna-box.visible{display:block}
+.dna-box .k{color:#e5c15a;font-weight:700}
+.swatch{display:inline-block;width:14px;height:14px;border-radius:2px;vertical-align:middle;margin-right:3px;border:1px solid #3d2418}
+.toggle-label{display:flex;align-items:center;gap:.6rem;cursor:pointer;padding:.5rem;background:#150c06;border:1px solid #3d2418;border-radius:4px;font-family:Georgia,serif;font-size:.85rem}
+.toggle-label input{width:auto;accent-color:#c44536;transform:scale(1.3);cursor:pointer}
+.toggle-label .lab{color:#e8dcc8}
+.toggle-label .lab strong{color:#e5c15a}
+.control-panel{background:linear-gradient(135deg,rgba(196,69,54,.06),rgba(139,90,43,.04));border:1px solid #3d2418;border-left:3px solid #c44536;border-radius:5px;padding:1.1rem;margin-bottom:1rem}
+.control-panel .info{font-size:.78rem;color:#a89578;margin-bottom:.9rem;line-height:1.6;font-family:Georgia,serif}
+.control-panel .info strong{color:#e5c15a}
+.control-panel .info .sel{color:#e87b35;font-weight:700}
+.progress-bar{height:6px;background:#150c06;border-radius:3px;overflow:hidden;margin-top:.7rem}
+.progress-bar .fill{height:100%;background:linear-gradient(90deg,#c44536,#e87b35,#e5c15a);width:0%;transition:width .3s;border-radius:3px}
+.progress-bar .fill.done{background:linear-gradient(90deg,#10b981,#34d399)}
+.batch-info{display:flex;gap:.75rem;flex-wrap:wrap;font-size:.7rem;font-family:ui-monospace,monospace;color:#8a7a5c;margin-top:.6rem;padding-top:.6rem;border-top:1px solid #3d2418}
+.batch-info strong{color:#e5c15a}
+.grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1.5rem}
+@media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1024px){.grid{grid-template-columns:1fr 1fr 1fr}}
+@media(min-width:1400px){.grid{grid-template-columns:1fr 1fr 1fr 1fr}}
+.photo{background:#231409;border:1px solid #3d2418;border-radius:4px;overflow:hidden;display:flex;flex-direction:column}
+.photo.pending{border-color:#4a3828;opacity:.9}
+.photo.generating{border-color:#e87b35;box-shadow:0 0 12px rgba(232,123,53,.2)}
+.photo.done{border-color:#8b5a2b}
+.photo.error{border-color:#7f1d1d}
+.photo-img{aspect-ratio:9/16;background:#0a0603;display:flex;align-items:center;justify-content:center;position:relative;min-height:260px}
+.photo-img img{width:100%;height:100%;object-fit:contain;display:block}
+.photo-img .load{width:100%;height:100%;background:#0a0603;display:flex;align-items:center;justify-content:center;color:#4a3828;font-size:.72rem;font-family:ui-monospace,monospace;position:relative;overflow:hidden;flex-direction:column;gap:.5rem;padding:1rem;text-align:center}
+.photo-img .load::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(196,69,54,.08) 50%,transparent 70%);animation:shim 1.8s linear infinite;pointer-events:none}
+@keyframes shim{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.photo-img .err{width:100%;height:100%;background:rgba(196,69,54,.1);display:flex;align-items:center;justify-content:center;color:#f87171;font-size:.7rem;text-align:center;padding:.6rem;flex-direction:column;gap:.3rem}
+.photo-img .err small{color:#a89578;font-size:.6rem;font-family:ui-monospace,monospace}
+.photo-img .mini-btn{margin-top:.3rem;font-size:.65rem;padding:.3rem .8rem;border:1px solid #8b5a2b;background:rgba(139,90,43,.15);color:#e5c15a;border-radius:3px;cursor:pointer;font-family:Georgia,serif;letter-spacing:.1em;text-transform:uppercase;font-weight:700}
+.photo-img .mini-btn:hover{background:rgba(232,123,53,.25)}
+.photo-meta{padding:.7rem;border-top:1px solid #3d2418;flex:1;display:flex;flex-direction:column;gap:.4rem}
+.pbadge{display:inline-block;font-size:.55rem;text-transform:uppercase;letter-spacing:.12em;padding:.15rem .5rem;border-radius:2px;margin-right:.3rem;margin-bottom:.3rem;font-weight:700;border:1px solid;font-family:ui-monospace,monospace}
+.pbadge.cat{background:rgba(232,123,53,.12);color:#e87b35;border-color:#8b5a2b}
+.pbadge.art{background:rgba(196,69,54,.12);color:#c44536;border-color:#7f1d1d}
+.pbadge.gen{background:rgba(16,185,129,.12);color:#34d399;border-color:#065f46}
+.ptitle{font-family:Georgia,serif;font-size:.85rem;color:#e5c15a;margin-bottom:.3rem;line-height:1.3;font-style:italic}
+.pdesc{font-size:.65rem;color:#a89578;font-family:Georgia,serif;line-height:1.4;margin-bottom:.3rem}
+.pblock{background:#150c06;border:1px solid #3d2418;border-radius:4px;padding:.55rem;position:relative;margin-top:auto}
+.plabel{font-size:.55rem;text-transform:uppercase;letter-spacing:.12em;color:#8a7a5c;font-family:ui-monospace,monospace;margin-bottom:.35rem}
+.ptext{font-size:.6rem;color:#a89578;font-family:ui-monospace,monospace;line-height:1.45;max-height:120px;overflow-y:auto;white-space:pre-wrap;word-break:break-word;padding-right:3.5rem}
+.pcopy{position:absolute;top:.4rem;right:.4rem;font-size:.55rem;padding:.15rem .4rem;border:1px solid #3d2418;border-radius:2px;background:transparent;color:#8a7a5c;cursor:pointer;font-family:-apple-system,sans-serif}
+.pcopy:hover{color:#e5c15a;border-color:#8b5a2b}
+.popen{display:block;text-align:center;margin-top:.4rem;font-size:.58rem;text-transform:uppercase;letter-spacing:.15em;padding:.4rem;border:1px solid #3d2418;border-radius:4px;color:#a89578;text-decoration:none;font-family:-apple-system,sans-serif}
+.popen:hover{color:#e5c15a;border-color:#8b5a2b}
+.panel{position:fixed;bottom:0;left:0;right:0;z-index:40}
+.handle{background:#231409;border-top:2px solid #8b5a2b;padding:.55rem 1rem;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none;gap:.5rem}
+.handle .toggle{font-family:ui-monospace,monospace;font-size:.72rem;color:#e5c15a;letter-spacing:.1em;flex-shrink:0}
+.handle .latest{font-size:.72rem;color:#a89578;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left;padding-left:.5rem}
+.handle button{font-size:.6rem;padding:.2rem .5rem;border:1px solid #3d2418;border-radius:3px;background:transparent;color:#8a7a5c;cursor:pointer;font-family:-apple-system,sans-serif}
+.handle button:hover{color:#e5c15a;border-color:#8b5a2b}
+.panel-content{background:#150c06;border-top:1px solid #3d2418;max-height:55vh;overflow-y:auto}
+.panel-content.hidden{display:none}
+.human-log{max-height:100px;overflow-y:auto;padding:.6rem 1rem;border-bottom:1px solid #3d2418;font-family:ui-monospace,monospace;font-size:.7rem}
+.human-log>div{margin-bottom:.2rem}
+.human-log .t{color:#4a3828}
+.human-log .m{color:#a88b4a}
+.debug-log{max-height:240px;overflow-y:auto;padding:.6rem 1rem;font-family:ui-monospace,monospace;font-size:.66rem;line-height:1.5}
+.debug-log>div{margin-bottom:.15rem;word-break:break-word}
+.debug-log .t{color:#4a3828}
+.debug-log .info{color:#a89578}
+.debug-log .ok{color:#a88b4a}
+.debug-log .warn{color:#e5c15a}
+.debug-log .err{color:#f87171}
+.debug-log .api{color:#e87b35}
+.debug-log .raw{color:#c44536;background:#0a0603;padding:.3rem .5rem;border-radius:3px;display:block;margin:.2rem 0;white-space:pre-wrap;font-size:.62rem;line-height:1.45;max-height:180px;overflow-y:auto}
+.toast{position:fixed;top:1rem;left:50%;transform:translateX(-50%) translateY(-120px);background:#231409;border:1px solid #3d2418;border-left:3px solid #e5c15a;border-radius:4px;padding:.75rem 1.2rem;font-size:.8rem;z-index:1000;opacity:0;transition:transform .3s,opacity .3s;max-width:90vw;text-align:center;font-family:Georgia,serif}
+.toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-left-color:#10b981}
+.toast.error{border-left-color:#c44536}
+.toast.warn{border-left-color:#e5c15a}
+.status-bar{position:fixed;bottom:60px;left:0;right:0;background:#231409;border-top:1px solid #3d2418;padding:.5rem 1rem;font-size:.7rem;font-family:ui-monospace,monospace;color:#e8dcc8;display:flex;align-items:center;gap:.5rem;transform:translateY(100%);transition:transform .3s;z-index:30}
+.status-bar.visible{transform:translateY(0)}
+.status-bar .spinner{width:12px;height:12px;border:2px solid rgba(196,69,54,.2);border-top-color:#c44536;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#150c06}
+::-webkit-scrollbar-thumb{background:#4a3828;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#8b5a2b}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<div class="kata">✦ Egon Multi-Ref Lab · v1 ✦</div>
+<h1>Multi-Ref → 40 œuvres</h1>
+<p class="sub">4 images analysées · Style DNA unifié · 40 combinaisons · mélange avec 40 artistes</p>
+</header>
+
+<div class="banner">
+<strong>Fonctionnement :</strong> chargez <strong class="hl-y">4 images de référence</strong>. L'IA analyse chacune (palette, style, personnages, technique, atmosphère) et produit <strong class="hl-r">4 prompts de copie parfaite</strong>, puis synthétise un <strong class="hl-y">Style DNA unifié</strong>. Génération de <strong class="hl-g">40 œuvres</strong> structurées : 5 personnages · 5 lieux · 5 maisons · 5 scènes drôles · 5 scènes magnifiques · belle femme · geek · politique · petit chien · 10 combinaisons. Bouton <strong class="hl-g">Continuer (+40)</strong> pour de nouvelles combinaisons. Option <strong class="hl-y">mélange avec 40 artistes célèbres</strong>.
+</div>
+
+<!-- ═══ CLÉS API ═══ -->
+<section class="card">
+<div class="card-head"><span>🔑 Clés API Agnes</span><span class="badge" id="keyBadge">0 validée</span></div>
+<div class="card-body">
+<textarea id="keysInput" placeholder="Collez vos clés API ici, une par ligne :&#10;sk-xxxxxxxxxxxx&#10;sk-yyyyyyyyyyyy" autocomplete="off" spellcheck="false"></textarea>
+<div class="row">
+<button class="btn btn-amber" id="validateBtn">🔐 Valider et enregistrer</button>
+<button class="btn btn-slate" id="clearKeysBtn" style="width:auto;min-width:80px;">Effacer</button>
+</div>
+<div class="status" id="keyStatus"><span class="dot"></span><span id="keyStatusText">Aucune clé enregistrée</span></div>
+<div class="hint">Rotation auto · paceur 3.4s/clé · retry ×6 sur 429/502/503/504.</div>
+</div>
+</section>
+
+<!-- ═══ 4 IMAGES DE RÉFÉRENCE ═══ -->
+<section class="card">
+<div class="card-head"><span>🖼️ 4 images de référence</span><span class="badge" id="refBadge">0 / 4</span></div>
+<div class="card-body">
+<div class="images-grid" id="imagesGrid">
+<div class="slot" data-slot="0"><input type="file" accept="image/*" class="slot-input"><div class="icon">＋</div><div class="txt"><strong>Image 1</strong></div><div class="num">Référence</div></div>
+<div class="slot" data-slot="1"><input type="file" accept="image/*" class="slot-input"><div class="icon">＋</div><div class="txt"><strong>Image 2</strong></div><div class="num">Référence</div></div>
+<div class="slot" data-slot="2"><input type="file" accept="image/*" class="slot-input"><div class="icon">＋</div><div class="txt"><strong>Image 3</strong></div><div class="num">Référence</div></div>
+<div class="slot" data-slot="3"><input type="file" accept="image/*" class="slot-input"><div class="icon">＋</div><div class="txt"><strong>Image 4</strong></div><div class="num">Référence</div></div>
+</div>
+<div class="row">
+<button class="btn btn-amber" id="analyzeBtn" disabled>🔍 Analyser les 4 images</button>
+<button class="btn btn-slate" id="reAnalyzeBtn" style="display:none;">🔁 Ré-analyser</button>
+</div>
+<div class="status" id="analyzeStatus"><span class="dot"></span><span id="analyzeStatusText">Chargez les 4 images</span></div>
+
+<div class="copy-prompts" id="copyPromptsBox">
+<h4>📋 4 prompts de copie parfaite</h4>
+<div id="copyPromptsList"></div>
+</div>
+
+<div class="dna-box" id="dnaBox"></div>
+</div>
+</section>
+
+<!-- ═══ OPTIONS ═══ -->
+<section class="card">
+<div class="card-head"><span>⚙️ Options de génération</span></div>
+<div class="card-body">
+<label class="toggle-label">
+<input type="checkbox" id="mixArtistsToggle">
+<span class="lab">Mélanger chaque œuvre avec un <strong>artiste célèbre</strong> différent (40 artistes par lot de 40)</span>
+</label>
+<div class="hint">Si activé : chaque œuvre fusionne le Style DNA avec le style d'un artiste parmi Picasso, Van Gogh, Monet, Klimt, Matisse, Dalí, etc. Un artiste différent par œuvre, 40 artistes par lot.</div>
+</div>
+</section>
+
+<!-- ═══ CONTRÔLE ═══ -->
+<div class="control-panel">
+<div class="info" id="controlInfo">
+Chargez les 4 images, analysez-les, puis générez la collection.
+</div>
+<div class="row" style="align-items:stretch;gap:.6rem;">
+<div style="flex:2;min-width:200px;"><button class="btn btn-mega" id="genBtn" disabled>✦ Générer 40 œuvres</button></div>
+<div style="flex:2;min-width:200px;"><button class="btn-success" id="continueBtn" disabled>＋ Continuer (+40)</button></div>
+<div style="flex:1;min-width:100px;"><button class="btn btn-slate" id="stopBtn" style="height:100%;" disabled>⏹ Stop</button></div>
+<div style="flex:1;min-width:100px;"><button class="btn btn-slate" id="resetBtn" style="height:100%;">↺ Reset</button></div>
+</div>
+<div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+<div class="batch-info">
+<span>Œuvres <strong id="worksCount">0</strong></span>
+<span>Générées <strong id="totalCount">0 / 0</strong></span>
+<span>En cours <strong id="queueCount">0</strong></span>
+<span id="rpmInfo"></span>
+</div>
+</div>
+
+<!-- ═══ RÉSULTATS ═══ -->
+<div id="resultsHeader" style="display:flex;justify-content:space-between;align-items:center;margin:1.5rem 0 .8rem;flex-wrap:wrap;gap:.5rem;">
+<div style="font-family:Georgia,serif;font-size:1.1rem;letter-spacing:.12em;text-transform:uppercase;color:#e5c15a;">✦ Collection</div>
+<div id="resultsCount" style="font-size:.72rem;font-family:ui-monospace,monospace;color:#a89578;">0 œuvre</div>
+</div>
+<div class="grid" id="photoGrid"></div>
+
+</div>
+
+<!-- ═══ CONSOLE ═══ -->
+<div class="panel">
+<div class="handle" id="panelHandle">
+<span class="toggle" id="panelToggle">▼ CONSOLE</span>
+<span class="latest" id="humanLatest">Prêt.</span>
+<button id="copyConsoleBtn">Copier</button>
+<button id="clearConsoleBtn">Effacer</button>
+</div>
+<div class="panel-content hidden" id="panelContent">
+<div class="human-log" id="humanLog"></div>
+<div class="debug-log" id="debugLog"></div>
+</div>
+</div>
+
+<div class="toast" id="toast"><span id="toastText">Message</span></div>
+<div class="status-bar" id="statusBar"><div class="spinner"></div><span id="statusText">Préparation…</span></div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════════════
+const API_BASE = 'https://apihub.agnes-ai.com/v1';
+const MODEL_TEXT = 'agnes-2.5-flash';
+const MODEL_IMAGE = 'agnes-image-2.1-flash';
+const IMAGE_SIZE = '1024x1792';
+const DELAY_PER_KEY_MS = 3400;
+const REF_MAX_SIDE = 1024;
+const KEYS_STORAGE = 'emr_keys';
+const REFS_STORAGE = 'emr_refs';
+const ANALYSIS_STORAGE = 'emr_analysis';
+const WORKS_STORAGE = 'emr_works';
+const DEBUG_MAX = 500;
+const MAX_ATTEMPTS = 6;
+
+// ═══════════════════════════════════════════════════════════════
+// 40 ARTISTES CÉLÈBRES
+// ═══════════════════════════════════════════════════════════════
+const FAMOUS_ARTISTS = [
+  {name:'Pablo Picasso', style:'cubist fragmentation, geometric planes, multiple viewpoints simultaneously'},
+  {name:'Vincent van Gogh', style:'swirling thick impasto, vibrant yellow and blue contrasts, turbulent brushwork'},
+  {name:'Claude Monet', style:'impressionist dappled light, soft pastel palette, broken brushstrokes'},
+  {name:'Gustav Klimt', style:'gold leaf ornamentation, intricate decorative patterns, byzantine richness'},
+  {name:'Henri Matisse', style:'fauvist flat colors, bold outlines, decorative shapes, joyful arabesques'},
+  {name:'Salvador Dalí', style:'surrealist dreamlike imagery, melting forms, meticulous precision applied to impossible scenes'},
+  {name:'Paul Cézanne', style:'geometric simplification, constructive brushstrokes, underlying forms'},
+  {name:'Pierre-Auguste Renoir', style:'soft feathery brushstrokes, warm social scenes, dappled light'},
+  {name:'Edgar Degas', style:'pastel dancers, candid compositions, captured movement'},
+  {name:'Édouard Manet', style:'flat areas of color, bold subject matter, modern life'},
+  {name:'Paul Gauguin', style:'synthetic flat planes, exotic symbolism, bold outlines'},
+  {name:'Marc Chagall', style:'dreamlike floating figures, jewel-toned colors, poetic symbolism'},
+  {name:'Wassily Kandinsky', style:'abstract geometric color, musical compositions, spiritual abstraction'},
+  {name:'Piet Mondrian', style:'neoplastic grid, primary colors, black lines, absolute abstraction'},
+  {name:'Joan Miró', style:'biomorphic shapes, primary colors, surreal symbols, playful automatism'},
+  {name:'René Magritte', style:'surrealist visual paradoxes, realistic rendering of impossible scenes'},
+  {name:'Francis Bacon', style:'distorted figurative screams, smeared paint, caged figures'},
+  {name:'Lucian Freud', style:'thick impasto flesh, psychological intensity, unflinching portraiture'},
+  {name:'David Hockney', style:'bright flat colors, swimming pools, californian light'},
+  {name:'Andy Warhol', style:'pop art silkscreen, repetition, saturated colors'},
+  {name:'Roy Lichtenstein', style:'comic book ben-day dots, bold outlines, primary colors'},
+  {name:'Jackson Pollock', style:'action painting, drips and splashes, all-over composition'},
+  {name:'Mark Rothko', style:'color field abstraction, soft rectangular forms, meditative depth'},
+  {name:'Willem de Kooning', style:'abstract expressionist, violent brushwork, fragmented figures'},
+  {name:'Frida Kahlo', style:'surrealist self-portraits, mexican symbolism, intense gaze'},
+  {name:'Diego Rivera', style:'muralist social realism, simplified monumental figures'},
+  {name:"Georgia O'Keeffe", style:'enlarged flowers, desert landscapes, organic abstractions'},
+  {name:'Edward Hopper', style:'american realist, lonely urban scenes, muted palette'},
+  {name:'Tamara de Lempicka', style:'art deco glamour, sharp geometric contours, polished finish'},
+  {name:'Amedeo Modigliani', style:'elongated faces, almond eyes, warm earthy tones, elegant melancholy'},
+  {name:'Egon Schiele', style:'angular gaunt figures, raw ink lines, muted flesh with carmine accents'},
+  {name:'Oskar Kokoschka', style:'expressive psychological portraits, turbulent brushwork'},
+  {name:'Max Beckmann', style:'bold black outlines, harsh compression, symbolic scenes'},
+  {name:'Otto Dix', style:'new objectivity, brutal realism, sharp social critique'},
+  {name:'George Grosz', style:'satirical caricature, sharp angular lines, political critique'},
+  {name:'Ernst Ludwig Kirchner', style:'expressionist jagged lines, acid colors, urban anxiety'},
+  {name:'Emil Nolde', style:'intense saturated colors, emotional power, mythic themes'},
+  {name:'Karl Schmidt-Rottluff', style:'expressionist woodcut-like forms, primitive energy, sharp contrasts'},
+  {name:'Erich Heckel', style:'expressionist angular figures, pale palette with strong accents'},
+  {name:'Edvard Munch', style:'symbolist angst, swirling lines, psychological intensity, nordic light'}
+];
+
+// ═══════════════════════════════════════════════════════════════
+// CATÉGORIES D'ÉLÉMENTS
+// ═══════════════════════════════════════════════════════════════
+const CHARACTERS = [
+  {id:'man', name:'Un homme', prompt:'a single man standing, full body', cat:'character'},
+  {id:'woman', name:'Une femme', prompt:'a single woman standing, full body', cat:'character'},
+  {id:'couple', name:'Un homme et une femme', prompt:'a man and a woman together, side by side', cat:'character'},
+  {id:'child', name:'Un enfant', prompt:'a child standing, looking at the viewer', cat:'character'},
+  {id:'group', name:'Un groupe', prompt:'a small group of people together', cat:'character'}
+];
+const PLACES = [
+  {id:'countryside', name:'Campagne', prompt:'a wide peaceful countryside landscape', cat:'place'},
+  {id:'city', name:'Ville', prompt:'a bustling city street with tall buildings', cat:'place'},
+  {id:'beach', name:'Bord de mer', prompt:'a sunny beach with gentle waves', cat:'place'},
+  {id:'mountains', name:'Montagnes', prompt:'majestic mountains in the background', cat:'place'},
+  {id:'forest', name:'Forêt', prompt:'a deep mysterious forest with tall trees', cat:'place'}
+];
+const HOUSES = [
+  {id:'cottage', name:'Chaumière', prompt:'a small thatched cottage with a garden', cat:'house'},
+  {id:'manor', name:'Manoir', prompt:'a grand manor house with many windows', cat:'house'},
+  {id:'cabin', name:'Cabane', prompt:'a rustic wooden cabin in nature', cat:'house'},
+  {id:'tower', name:'Tour', prompt:'a tall medieval stone tower', cat:'house'},
+  {id:'stilt', name:'Maison sur pilotis', prompt:'a house on stilts over calm water', cat:'house'}
+];
+const FUNNY_SCENES = [
+  {id:'slip', name:'Glissade', prompt:'someone comically slipping on a banana peel', cat:'funny'},
+  {id:'cat_theft', name:'Chat voleur', prompt:'a cat stealing food from a table', cat:'funny'},
+  {id:'hat_fly', name:'Chapeau envolé', prompt:'a hat flying away in the wind while its owner chases it', cat:'funny'},
+  {id:'dog_tail', name:'Chien qui tourne', prompt:'a dog excitedly chasing its own tail', cat:'funny'},
+  {id:'chair_fall', name:'Chute de chaise', prompt:'a person comically falling off a chair', cat:'funny'}
+];
+const BEAUTIFUL_SCENES = [
+  {id:'sunset', name:'Coucher de soleil', prompt:'a golden sunset over calm water', cat:'beautiful'},
+  {id:'flowers', name:'Champ de fleurs', prompt:'a field full of wildflowers in bloom', cat:'beautiful'},
+  {id:'snow', name:'Paysage enneigé', prompt:'a peaceful snow-covered landscape', cat:'beautiful'},
+  {id:'rainbow', name:'Arc-en-ciel', prompt:'a rainbow after the rain', cat:'beautiful'},
+  {id:'aurora', name:'Aurore boréale', prompt:'a starry sky with aurora borealis', cat:'beautiful'}
+];
+const SPECIALS = [
+  {id:'beautiful_woman', name:'Une belle femme', prompt:'an elegant beautiful woman with flowing hair', cat:'special'},
+  {id:'geek', name:'Un geek', prompt:'a young geek with glasses and a hoodie, holding a laptop', cat:'special'},
+  {id:'politics', name:'Actualité politique', prompt:'a political press conference scene with microphones', cat:'special'},
+  {id:'small_dog', name:'Un petit chien', prompt:'a small cute dog sitting', cat:'special'},
+  {id:'cat', name:'Un chat', prompt:'a small cat sitting calmly', cat:'special'},
+  {id:'bird', name:'Un oiseau', prompt:'a small colorful bird perched on a branch', cat:'special'},
+  {id:'flower', name:'Une fleur', prompt:'a single flower in full bloom', cat:'special'}
+];
+
+// 10 combinaisons initiales (pour atteindre 40)
+const INITIAL_COMBOS = [
+  [CHARACTERS[0], PLACES[0]],       // homme à la campagne
+  [CHARACTERS[1], HOUSES[0]],       // femme devant chaumière
+  [CHARACTERS[2], PLACES[1]],       // couple en ville
+  [CHARACTERS[3], SPECIALS[3]],     // enfant + petit chien
+  [SPECIALS[0], PLACES[2]],         // belle femme à la plage
+  [SPECIALS[1], HOUSES[3]],         // geek devant tour
+  [SPECIALS[4], HOUSES[2]],         // chat dans cabane
+  [CHARACTERS[0], SPECIALS[3], PLACES[3]], // homme + chien + montagne
+  [CHARACTERS[1], BEAUTIFUL_SCENES[3]],    // femme + arc-en-ciel
+  [CHARACTERS[4], BEAUTIFUL_SCENES[0]]     // groupe + coucher de soleil
+];
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+const state = {
+  apiKeys: [],
+  images: [null, null, null, null],
+  imageNames: ['', '', '', ''],
+  analyses: [null, null, null, null],
+  styleDNA: null,
+  copyPrompts: [],
+  works: [],
+  usedKeys: new Set(),
+  isRunning: false,
+  stopRequested: false,
+  completed: 0,
+  total: 0,
+  keyIndex: 0,
+  humanLog: [],
+  debugLog: [],
+  lastRawResponse: '',
+  mixArtists: false,
+  workCards: new Map()
+};
+
+// ═══════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nowTime = () => new Date().toLocaleTimeString('fr-FR', { hour12: false });
+const fmtEta = s => { if (s < 0 || !isFinite(s)) return ''; return s < 60 ? Math.round(s) + 's' : Math.floor(s / 60) + 'm ' + Math.round(s % 60) + 's'; };
+const sanitize = t => String(t == null ? '' : t).replace(/[\u2018\u2019\u201B\u2032\u02BC]/g, "'").replace(/[\u201C\u201D\u201F\u2033]/g, '"').replace(/\u2013|\u2014/g, '-').replace(/\u2026/g, '...').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\u00A0|\u202F/g, ' ');
+const trunc = (t, n) => { if (!t) return ''; const s = String(t).replace(/\s+/g, ' ').trim(); return s.length <= n ? s : s.slice(0, n - 1) + '…'; };
+
+function human(msg) {
+  state.humanLog.push({ t: nowTime(), m: msg });
+  if (state.humanLog.length > 80) state.humanLog.shift();
+  const el = $('humanLatest'); if (el) el.textContent = msg;
+  renderHuman();
+}
+function renderHuman() {
+  const el = $('humanLog'); if (!el) return;
+  el.innerHTML = state.humanLog.slice(-30).map(e => '<div><span class="t">' + e.t + '</span> <span class="m">' + esc(e.m) + '</span></div>').join('');
+  el.scrollTop = el.scrollHeight;
+}
+function debug(msg, level = 'info', raw) {
+  state.debugLog.push({ t: nowTime(), m: msg, c: level, raw: raw });
+  if (state.debugLog.length > DEBUG_MAX) state.debugLog.shift();
+  renderDebug();
+}
+function renderDebug() {
+  const el = $('debugLog'); if (!el) return;
+  el.innerHTML = state.debugLog.slice(-200).map(e => {
+    let html = '<div><span class="t">' + e.t + '</span> <span class="' + e.c + '">' + esc(e.m) + '</span>';
+    if (e.raw) html += '<span class="raw">' + esc(String(e.raw).slice(0, 1500)) + '</span>';
+    html += '</div>';
+    return html;
+  }).join('');
+  el.scrollTop = el.scrollHeight;
+}
+function toast(msg, type = 'success', dur = 2500) {
+  const t = $('toast');
+  t.className = 'toast ' + type + ' visible';
+  $('toastText').textContent = msg;
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.className = 'toast ' + type; }, dur);
+}
+function setStatus(txt) {
+  const b = $('statusBar');
+  if (txt) { b.classList.add('visible'); $('statusText').textContent = txt; }
+  else b.classList.remove('visible');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════════════
+const _mem = {};
+let _lsOk = false, _ssOk = false;
+try { localStorage.setItem('__t', '1'); localStorage.removeItem('__t'); _lsOk = true; } catch (e) {}
+try { sessionStorage.setItem('__t', '1'); sessionStorage.removeItem('__t'); _ssOk = true; } catch (e) {}
+function storageGet(k) {
+  if (_lsOk) { try { const v = localStorage.getItem(k); if (v !== null) return v; } catch (e) {} }
+  if (_ssOk) { try { const v = sessionStorage.getItem(k); if (v !== null) return v; } catch (e) {} }
+  return Object.prototype.hasOwnProperty.call(_mem, k) ? _mem[k] : null;
+}
+function storageSet(k, v) {
+  _mem[k] = String(v);
+  if (_lsOk) { try { localStorage.setItem(k, v); } catch (e) {} }
+  if (_ssOk) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+}
+function storageDel(k) {
+  delete _mem[k];
+  if (_lsOk) { try { localStorage.removeItem(k); } catch (e) {} }
+  if (_ssOk) { try { sessionStorage.removeItem(k); } catch (e) {} }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CLÉS API
+// ═══════════════════════════════════════════════════════════════
+function isValidKey(k) { return typeof k === 'string' && k.startsWith('sk-') && k.length >= 15 && k.length <= 200; }
+async function quickPing(key) {
+  try {
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(API_BASE + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: MODEL_TEXT, messages: [{ role: 'user', content: 'ok' }], max_tokens: 1 }),
+      signal: controller.signal
+    });
+    clearTimeout(tid);
+    return res.status !== 401 && res.status !== 403;
+  } catch (e) { return null; }
+}
+async function validateAndSaveKeys() {
+  const raw = $('keysInput').value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (raw.length === 0) { toast('Aucune clé à valider', 'error'); return; }
+  $('validateBtn').disabled = true;
+  $('validateBtn').textContent = '⏳ Validation…';
+  human('🔐 Validation de ' + raw.length + ' clé(s)…');
+  const valid = [];
+  for (let i = 0; i < raw.length; i++) {
+    const k = raw[i];
+    if (!isValidKey(k)) { debug('Clé ' + (i + 1) + ' : format invalide', 'err'); continue; }
+    const ping = await quickPing(k);
+    if (ping === false) { debug('Clé ' + (i + 1) + ' : refusée', 'err'); continue; }
+    valid.push(k);
+    debug('Clé ' + (i + 1) + ' : OK', 'ok');
+  }
+  state.apiKeys = valid;
+  storageSet(KEYS_STORAGE, JSON.stringify(valid));
+  const st = $('keyStatus');
+  if (valid.length > 0) {
+    st.className = 'status ok';
+    $('keyStatusText').textContent = valid.length + ' clé(s) enregistrée(s) · RPM ≈ ' + (valid.length * 12) + '/min';
+    $('rpmInfo').textContent = 'RPM cap ≈ ' + (valid.length * 12);
+  } else {
+    st.className = 'status err';
+    $('keyStatusText').textContent = 'Aucune clé valide';
+  }
+  $('validateBtn').disabled = false;
+  $('validateBtn').textContent = '🔐 Valider et enregistrer';
+  $('keyBadge').textContent = valid.length + ' validée' + (valid.length > 1 ? 's' : '');
+  updateButtons();
+  toast(valid.length + ' clé(s) enregistrée(s)', valid.length > 0 ? 'success' : 'error', 3000);
+}
+function getKey() {
+  if (state.apiKeys.length === 0) return '';
+  const k = state.apiKeys[state.keyIndex % state.apiKeys.length];
+  state.keyIndex++;
+  return k;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// IMAGE HANDLING
+// ═══════════════════════════════════════════════════════════════
+function compressImg(dataUrl, maxSide) {
+  maxSide = maxSide || REF_MAX_SIDE;
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => {
+      let { width: w, height: h } = img;
+      const s = Math.min(1, maxSide / Math.max(w, h));
+      w = Math.max(1, Math.round(w * s));
+      h = Math.max(1, Math.round(h * s));
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      const x = c.getContext('2d');
+      x.fillStyle = '#fff'; x.fillRect(0, 0, w, h);
+      x.drawImage(img, 0, 0, w, h);
+      let url = c.toDataURL('image/jpeg', 0.85);
+      let q = 0.85;
+      while (url.length > 1.2 * 1024 * 1024 && q > 0.5) { q -= 0.1; url = c.toDataURL('image/jpeg', q); }
+      res(url);
+    };
+    img.onerror = () => res(dataUrl);
+    img.src = dataUrl;
+  });
+}
+async function handleSlotFile(slotIdx, file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('Fichier non image', 'error'); return; }
+  if (file.size > 30 * 1024 * 1024) { toast('Image trop lourde (>30 Mo)', 'error'); return; }
+  try {
+    const dataUrl = await new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = e => res(e.target.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+    const compressed = await compressImg(dataUrl);
+    state.images[slotIdx] = compressed;
+    state.imageNames[slotIdx] = file.name;
+    state.analyses[slotIdx] = null;
+    state.styleDNA = null;
+    state.copyPrompts = [];
+    storageSet(REFS_STORAGE, JSON.stringify({ images: state.images, names: state.imageNames }));
+    refreshSlots();
+    hideAnalysis();
+    human('📷 Image ' + (slotIdx + 1) + ' chargée : ' + file.name);
+    toast('Image ' + (slotIdx + 1) + ' chargée', 'success', 1500);
+  } catch (e) { debug('Erreur image : ' + e.message, 'err'); toast('Chargement impossible', 'error'); }
+}
+function refreshSlots() {
+  const slots = document.querySelectorAll('.slot');
+  let count = 0;
+  state.images.forEach((img, i) => {
+    const slot = slots[i];
+    if (!slot) return;
+    if (img) {
+      count++;
+      slot.classList.add('filled');
+      slot.classList.toggle('analyzed', !!state.analyses[i]);
+      const okBadge = state.analyses[i] ? '<div class="badge-ok">✓</div>' : '';
+      slot.innerHTML = '<input type="file" accept="image/*" class="slot-input"><button class="rm" data-rm="' + i + '">✕</button>' + okBadge + '<img src="' + img + '" alt="">';
+    } else {
+      slot.classList.remove('filled', 'analyzed');
+      slot.innerHTML = '<input type="file" accept="image/*" class="slot-input"><div class="icon">＋</div><div class="txt"><strong>Image ' + (i + 1) + '</strong></div><div class="num">Référence</div>';
+    }
+    // attach handlers
+    const input = slot.querySelector('.slot-input');
+    if (input) input.onchange = (e) => { const f = e.target.files && e.target.files[0]; if (f) handleSlotFile(i, f); e.target.value = ''; };
+    const rm = slot.querySelector('.rm');
+    if (rm) rm.onclick = (e) => { e.stopPropagation(); removeSlot(i); };
+  });
+  $('refBadge').textContent = count + ' / 4';
+  updateButtons();
+}
+function removeSlot(i) {
+  state.images[i] = null;
+  state.imageNames[i] = '';
+  state.analyses[i] = null;
+  state.styleDNA = null;
+  state.copyPrompts = [];
+  storageSet(REFS_STORAGE, JSON.stringify({ images: state.images, names: state.imageNames }));
+  refreshSlots();
+  hideAnalysis();
+  toast('Image ' + (i + 1) + ' retirée', 'warn');
+}
+function hideAnalysis() {
+  $('copyPromptsBox').classList.remove('visible');
+  $('dnaBox').classList.remove('visible');
+  $('copyPromptsList').innerHTML = '';
+  $('dnaBox').innerHTML = '';
+  $('analyzeStatus').className = 'status';
+  $('analyzeStatusText').textContent = 'Chargez les 4 images';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// JSON PARSING TOLÉRANT
+// ═══════════════════════════════════════════════════════════════
+function extractBalanced(text, openChar, closeChar) {
+  let start = text.indexOf(openChar);
+  if (start < 0) return null;
+  let depth = 0, inStr = false, escNext = false;
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i];
+    if (escNext) { escNext = false; continue; }
+    if (ch === '\\') { escNext = true; continue; }
+    if (ch === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (ch === openChar) depth++;
+    else if (ch === closeChar) { depth--; if (depth === 0) return text.slice(start, i + 1); }
+  }
+  return null;
+}
+function repairJson(text) {
+  if (!text) return null;
+  let c = String(text).trim();
+  const fm = c.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fm) c = fm[1].trim();
+  const fb = c.indexOf('{'); if (fb < 0) return null;
+  c = c.slice(fb);
+  const lb = c.lastIndexOf('}'); if (lb > 0) c = c.slice(0, lb + 1);
+  let out = '', inS = false, esc2 = false;
+  for (let i = 0; i < c.length; i++) {
+    const ch = c[i];
+    if (esc2) { if ('"\\/bfnrtu'.includes(ch)) out += '\\' + ch; else out += ch; esc2 = false; continue; }
+    if (ch === '\\') { esc2 = true; continue; }
+    if (ch === '"') { inS = !inS; out += ch; continue; }
+    if (inS) {
+      if (ch === '\n') out += '\\n';
+      else if (ch === '\r') out += '\\r';
+      else if (ch === '\t') out += '\\t';
+      else if (ch.charCodeAt(0) < 32) out += '\\u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
+      else out += ch;
+      continue;
+    }
+    out += ch;
+  }
+  if (esc2) out += '\\';
+  if (inS) out += '"';
+  return out.replace(/,\s*([}\]])/g, '$1');
+}
+function tryParseJson(text) {
+  if (!text) return null;
+  const raw = String(text);
+  const objText = extractBalanced(raw, '{', '}');
+  if (objText) {
+    try { return JSON.parse(objText); } catch (e) {}
+    const rep = repairJson(objText);
+    if (rep) { try { return JSON.parse(rep); } catch (e) {} }
+  }
+  const arrText = extractBalanced(raw, '[', ']');
+  if (arrText) {
+    try { return JSON.parse(arrText); } catch (e) {}
+    try { return JSON.parse(repairJson(arrText)); } catch (e) {}
+  }
+  const rep2 = repairJson(raw);
+  if (rep2) { try { return JSON.parse(rep2); } catch (e) {} }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// API CALLS
+// ═══════════════════════════════════════════════════════════════
+async function apiChat(system, user, label, maxTokens, temp) {
+  const key = getKey();
+  if (!key) throw new Error('Aucune clé API');
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 120000);
+  try {
+    const res = await fetch(API_BASE + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: MODEL_TEXT,
+        messages: [
+          { role: 'system', content: sanitize(system) },
+          { role: 'user', content: sanitize(user) }
+        ],
+        temperature: temp !== undefined ? temp : 0.4,
+        max_tokens: maxTokens || 3000
+      }),
+      signal: controller.signal
+    });
+    clearTimeout(tid);
+    debug('CHAT ' + label + ' HTTP ' + res.status, res.ok ? 'ok' : 'err');
+    if (!res.ok) { const t = await res.text(); throw new Error('HTTP ' + res.status + ' ' + t.slice(0, 120)); }
+    const d = await res.json();
+    const ch = d.choices && d.choices[0];
+    const content = (ch && ch.message && (ch.message.content || ch.message.reasoning_content)) || null;
+    if (!content) { debug('CHAT ' + label + ' : réponse vide', 'err', JSON.stringify(d).slice(0, 400)); }
+    return content;
+  } catch (e) { clearTimeout(tid); throw e; }
+}
+async function apiVision(system, user, imageUrl, label, maxTokens, temp) {
+  const key = getKey();
+  if (!key) throw new Error('Aucune clé API');
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 90000);
+  try {
+    const res = await fetch(API_BASE + '/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: MODEL_TEXT,
+        messages: [
+          { role: 'system', content: sanitize(system) },
+          { role: 'user', content: [
+            { type: 'text', text: sanitize(user) },
+            { type: 'image_url', image_url: { url: imageUrl } }
+          ] }
+        ],
+        temperature: temp !== undefined ? temp : 0.3,
+        max_tokens: maxTokens || 2400
+      }),
+      signal: controller.signal
+    });
+    clearTimeout(tid);
+    debug('VISION ' + label + ' HTTP ' + res.status, res.ok ? 'ok' : 'err');
+    if (!res.ok) { const t = await res.text(); throw new Error('HTTP ' + res.status + ' ' + t.slice(0, 120)); }
+    const d = await res.json();
+    const ch = d.choices && d.choices[0];
+    const content = (ch && ch.message && (ch.message.content || ch.message.reasoning_content)) || null;
+    if (!content) { debug('VISION ' + label + ' : réponse vide', 'err', JSON.stringify(d).slice(0, 400)); }
+    return content;
+  } catch (e) { clearTimeout(tid); throw e; }
+}
+async function apiImage(prompt) {
+  const key = getKey();
+  if (!key) throw new Error('Aucune clé API');
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    if (state.stopRequested) throw new Error('Arrêt');
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 90000);
+    try {
+      const body = {
+        model: MODEL_IMAGE,
+        prompt: sanitize(prompt),
+        n: 1,
+        size: IMAGE_SIZE,
+        extra_body: { response_format: 'url' }
+      };
+      const res = await fetch(API_BASE + '/images/generations', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: controller.signal
+      });
+      clearTimeout(tid);
+      debug('IMG HTTP ' + res.status + ' · essai ' + (attempt + 1) + '/' + MAX_ATTEMPTS, res.ok ? 'ok' : 'warn');
+      if (res.status === 429 || res.status === 502 || res.status === 503 || res.status === 504) {
+        await sleep(Math.min(60, 6 + attempt * 6) * 1000);
+        continue;
+      }
+      if (!res.ok) {
+        const t = await res.text().catch(() => '');
+        if (attempt < MAX_ATTEMPTS - 1 && res.status < 500 && res.status !== 400) { await sleep(3000 + attempt * 2000); continue; }
+        throw new Error('HTTP ' + res.status + ' ' + t.slice(0, 100));
+      }
+      const d = await res.json();
+      const item = d.data && d.data[0];
+      if (item && item.url) return item.url;
+      if (item && item.b64_json) return 'data:image/png;base64,' + item.b64_json;
+      throw new Error('Réponse sans image');
+    } catch (e) {
+      clearTimeout(tid);
+      if (e.message === 'Arrêt' || state.stopRequested) throw new Error('Arrêt');
+      const isAbort = e.name === 'AbortError';
+      if (attempt < MAX_ATTEMPTS - 1) { await sleep(isAbort ? 5000 : 3000); continue; }
+      throw new Error(isAbort ? 'Timeout' : e.message);
+    }
+  }
+  throw new Error('Échec après ' + MAX_ATTEMPTS + ' tentatives');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ANALYSE D'UNE IMAGE
+// ═══════════════════════════════════════════════════════════════
+async function analyzeImage(dataUrl, index) {
+  const sys = [
+    'You are an expert art analyst and image describer.',
+    'Analyze the provided reference image and produce a forensic description that could perfectly recreate it.',
+    'Output ONLY valid JSON with these exact keys:',
+    'artist_guess, technique, brushwork, palette, characters, composition, atmosphere, distinctive, copy_prompt.',
+    '',
+    'artist_guess: "artist name if clearly recognizable, else unknown"',
+    'technique: "oil painting / watercolor / digital / photography / ink drawing / etc."',
+    'brushwork: "description of brushwork or texture"',
+    'palette: array of 6 objects {name, hex} — the dominant colors',
+    'characters: array of strings describing the characters present',
+    'composition: "description of the composition and framing"',
+    'atmosphere: "mood and atmosphere"',
+    'distinctive: "unique features, motifs, recurring elements"',
+    'copy_prompt: 150-200 words in ENGLISH that would perfectly recreate this image if given to an image generator',
+    '',
+    'Output ONLY the JSON object. Start with { and end with }. No markdown, no commentary.'
+  ].join(' ');
+  const usr = 'Analyze this reference image with EXTREME precision. Output ONLY the JSON object.';
+  const raw = await apiVision(sys, usr, dataUrl, 'Img ' + (index + 1), 2400, 0.3);
+  state.lastRawResponse = raw || '';
+  if (!raw) throw new Error('Réponse vide');
+  const p = tryParseJson(raw);
+  if (!p) throw new Error('JSON illisible');
+  // Normalisation
+  return {
+    artist_guess: String(p.artist_guess || 'unknown'),
+    technique: String(p.technique || 'painting'),
+    brushwork: String(p.brushwork || ''),
+    palette: Array.isArray(p.palette) ? p.palette.slice(0, 8) : [],
+    characters: Array.isArray(p.characters) ? p.characters.map(String) : [],
+    composition: String(p.composition || ''),
+    atmosphere: String(p.atmosphere || ''),
+    distinctive: String(p.distinctive || ''),
+    copy_prompt: String(p.copy_prompt || '')
+  };
+}
+
+async function synthesizeStyle(analyses) {
+  const validAnalyses = analyses.filter(a => a);
+  if (validAnalyses.length === 0) throw new Error('Aucune analyse disponible');
+  const sys = 'You are an expert art curator. You output only valid JSON.';
+  const user = [
+    'Here are ' + validAnalyses.length + ' analyses of reference images:',
+    validAnalyses.map((a, i) => '=== IMAGE ' + (i + 1) + ' ===\n' + JSON.stringify(a, null, 2)).join('\n\n'),
+    '',
+    'Synthesize them into ONE unified style DNA that captures the common thread across all these references.',
+    'Output ONLY valid JSON with these exact keys:',
+    'name, palette, technique, brushwork, atmosphere, recurring_motifs, style_prompt.',
+    '',
+    'name: "short French name for the unified style"',
+    'palette: array of 6 objects {name, hex} — the merged dominant colors',
+    'technique: "unified technique description in ENGLISH"',
+    'brushwork: "unified brushwork description in ENGLISH"',
+    'atmosphere: "unified mood in ENGLISH"',
+    'recurring_motifs: array of strings in ENGLISH',
+    'style_prompt: 200 words in ENGLISH that captures this unified style perfectly',
+    '',
+    'Output ONLY the JSON object. Start with { and end with }.'
+  ].join('\n');
+  const raw = await apiChat(sys, user, 'Synthesis', 3000, 0.4);
+  state.lastRawResponse = raw || '';
+  if (!raw) throw new Error('Réponse vide');
+  const p = tryParseJson(raw);
+  if (!p) throw new Error('JSON illisible');
+  return {
+    name: String(p.name || 'Style unifié'),
+    palette: Array.isArray(p.palette) ? p.palette.slice(0, 8) : [],
+    technique: String(p.technique || ''),
+    brushwork: String(p.brushwork || ''),
+    atmosphere: String(p.atmosphere || ''),
+    recurring_motifs: Array.isArray(p.recurring_motifs) ? p.recurring_motifs.map(String) : [],
+    style_prompt: String(p.style_prompt || '')
+  };
+}
+
+async function analyzeAll() {
+  if (state.apiKeys.length === 0) { toast('Ajoutez une clé API', 'error'); return; }
+  const loaded = state.images.filter(x => x).length;
+  if (loaded < 1) { toast('Chargez au moins 1 image', 'error'); return; }
+  $('analyzeBtn').disabled = true;
+  $('reAnalyzeBtn').disabled = true;
+  setStatus('Analyse des images…');
+  human('🔍 Analyse de ' + loaded + ' image(s)…');
+  $('analyzeStatus').className = 'status warn';
+  $('analyzeStatusText').textContent = 'Analyse en cours…';
+  try {
+    for (let i = 0; i < 4; i++) {
+      if (!state.images[i]) continue;
+      $('analyzeStatusText').textContent = 'Analyse image ' + (i + 1) + ' / 4…';
+      try {
+        state.analyses[i] = await analyzeImage(state.images[i], i);
+        debug('Analyse img ' + (i + 1) + ' OK · ' + (state.analyses[i].artist_guess || 'unknown'), 'ok');
+        refreshSlots();
+      } catch (e) {
+        debug('Analyse img ' + (i + 1) + ' échec : ' + e.message, 'err');
+      }
+      await sleep(500);
+    }
+    const validAnalyses = state.analyses.filter(a => a);
+    if (validAnalyses.length === 0) throw new Error('Aucune image analysée');
+    $('analyzeStatusText').textContent = 'Synthèse du Style DNA…';
+    human('🧠 Synthèse du style unifié…');
+    state.styleDNA = await synthesizeStyle(state.analyses);
+    state.copyPrompts = state.analyses.filter(a => a).map(a => a.copy_prompt);
+    renderAnalysisUI();
+    $('analyzeStatus').className = 'status ok';
+    $('analyzeStatusText').textContent = validAnalyses.length + ' image(s) analysée(s) · Style DNA prêt';
+    human('✅ Style DNA synthétisé');
+    toast('Analyse terminée · Style DNA prêt', 'success', 2500);
+    $('reAnalyzeBtn').style.display = 'block';
+  } catch (e) {
+    debug('Analyse globale échec : ' + e.message, 'err', state.lastRawResponse ? state.lastRawResponse.slice(0, 800) : '');
+    $('analyzeStatus').className = 'status err';
+    $('analyzeStatusText').textContent = 'Échec : ' + e.message;
+    toast('Analyse impossible : ' + e.message, 'error', 4000);
+  } finally {
+    $('analyzeBtn').disabled = false;
+    $('reAnalyzeBtn').disabled = false;
+    setStatus(null);
+    refreshSlots();
+    updateButtons();
+  }
+}
+
+function renderAnalysisUI() {
+  // 4 copy prompts
+  const list = $('copyPromptsList');
+  list.innerHTML = '';
+  state.analyses.forEach((a, i) => {
+    if (!a) return;
+    const div = document.createElement('div');
+    div.className = 'cp-item';
+    div.innerHTML = '<div class="cp-title">Image ' + (i + 1) + ' — ' + esc(a.artist_guess || 'unknown') + '</div>' +
+      '<button class="pcopy" data-copy="' + esc(a.copy_prompt) + '">Copier</button>' +
+      '<div class="cp-body">' + esc(a.copy_prompt) + '</div>';
+    list.appendChild(div);
+  });
+  list.querySelectorAll('.pcopy').forEach(b => {
+    b.onclick = () => {
+      const ta = document.createElement('textarea');
+      ta.value = b.dataset.copy;
+      ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (er) {}
+      document.body.removeChild(ta);
+      toast(ok ? 'Prompt copié' : 'Copie impossible', ok ? 'success' : 'error', 1500);
+    };
+  });
+  $('copyPromptsBox').classList.add('visible');
+
+  // Style DNA
+  const dna = state.styleDNA;
+  if (dna) {
+    let html = '<span class="k">▸ NOM</span> ' + esc(dna.name) + '\n\n';
+    html += '<span class="k">▸ TECHNIQUE</span> ' + esc(dna.technique) + '\n\n';
+    html += '<span class="k">▸ PINCEAU</span> ' + esc(dna.brushwork) + '\n\n';
+    html += '<span class="k">▸ ATMOSPHÈRE</span> ' + esc(dna.atmosphere) + '\n\n';
+    if (dna.palette.length) {
+      html += '<span class="k">▸ PALETTE</span> ' + dna.palette.map(c => '<span class="swatch" style="background:' + esc(c.hex) + '"></span>' + esc(c.hex + ' ' + (c.name || ''))).join(' · ') + '\n\n';
+    }
+    if (dna.recurring_motifs.length) {
+      html += '<span class="k">▸ MOTIFS</span> ' + dna.recurring_motifs.map(esc).join(', ') + '\n\n';
+    }
+    html += '<span class="k">▸ PROMPT STYLE</span> ' + esc(dna.style_prompt);
+    $('dnaBox').innerHTML = html;
+    $('dnaBox').classList.add('visible');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WORKS GENERATION
+// ═══════════════════════════════════════════════════════════════
+function buildInitialWorks() {
+  const works = [];
+  const push = (cat, item, i) => {
+    works.push({
+      id: 'init_' + cat + '_' + i + '_' + Date.now(),
+      title: item.name,
+      elements: [item],
+      category: cat,
+      key: item.id
+    });
+  };
+  CHARACTERS.forEach((c, i) => push('Personnage', c, i));
+  PLACES.forEach((c, i) => push('Lieu', c, i));
+  HOUSES.forEach((c, i) => push('Maison', c, i));
+  FUNNY_SCENES.forEach((c, i) => push('Drôle', c, i));
+  BEAUTIFUL_SCENES.forEach((c, i) => push('Magnifique', c, i));
+  SPECIALS.slice(0, 5).forEach((c, i) => push('Spécial', c, i));
+  INITIAL_COMBOS.forEach((combo, i) => {
+    const key = combo.map(x => x.id).sort().join('+');
+    works.push({
+      id: 'init_combo_' + i + '_' + Date.now(),
+      title: combo.map(x => x.name).join(' · '),
+      elements: combo,
+      category: 'Combiné',
+      key: key
+    });
+    state.usedKeys.add(key);
+  });
+  return works;
+}
+
+function getAllItems() {
+  return [...CHARACTERS, ...PLACES, ...HOUSES, ...FUNNY_SCENES, ...BEAUTIFUL_SCENES, ...SPECIALS];
+}
+
+function generateMoreCombinations(count) {
+  const allItems = getAllItems();
+  const works = [];
+  let attempts = 0;
+  while (works.length < count && attempts < 5000) {
+    attempts++;
+    const numItems = Math.random() < 0.35 ? 1 : (Math.random() < 0.7 ? 2 : 3);
+    const picks = [];
+    const usedCats = new Set();
+    let safety = 0;
+    while (picks.length < numItems && safety < 20) {
+      safety++;
+      const item = allItems[Math.floor(Math.random() * allItems.length)];
+      if (usedCats.has(item.cat)) continue;
+      usedCats.add(item.cat);
+      picks.push(item);
+    }
+    if (picks.length === 0) continue;
+    const key = picks.map(p => p.id).sort().join('+');
+    if (state.usedKeys.has(key)) continue;
+    state.usedKeys.add(key);
+    works.push({
+      id: 'gen_' + Date.now() + '_' + works.length,
+      title: picks.map(p => p.name).join(' · '),
+      elements: picks,
+      category: 'Combiné',
+      key: key
+    });
+  }
+  return works;
+}
+
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function assignArtists(batch) {
+  const artists = shuffleArray(FAMOUS_ARTISTS);
+  batch.forEach((w, i) => {
+    w.artist = artists[i % artists.length];
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PROMPT BUILDER
+// ═══════════════════════════════════════════════════════════════
+function buildImagePrompt(work) {
+  const dna = state.styleDNA || {};
+  const P = [];
+  P.push('════════ UNIFIED STYLE DNA ════════');
+  if (dna.name) P.push('Style name: ' + dna.name);
+  if (dna.technique) P.push('Technique: ' + dna.technique);
+  if (dna.brushwork) P.push('Brushwork: ' + dna.brushwork);
+  if (dna.atmosphere) P.push('Atmosphere: ' + dna.atmosphere);
+  if (dna.palette && dna.palette.length) {
+    P.push('Palette: ' + dna.palette.map(c => (c.hex || '') + ' (' + (c.name || '') + ')').join(', '));
+  }
+  if (dna.recurring_motifs && dna.recurring_motifs.length) {
+    P.push('Recurring motifs: ' + dna.recurring_motifs.join(', '));
+  }
+  if (dna.style_prompt) P.push('Style notes: ' + dna.style_prompt);
+  P.push('');
+  P.push('════════ SCENE ELEMENTS ════════');
+  work.elements.forEach(e => P.push('• ' + e.prompt));
+  P.push('');
+  if (work.artist) {
+    P.push('════════ ARTIST STYLE MIX — ' + work.artist.name.toUpperCase() + ' ════════');
+    P.push('Blend the unified style DNA above with the distinctive style of ' + work.artist.name + '.');
+    P.push(work.artist.name + ' style: ' + work.artist.style + '.');
+    P.push('Both styles must be visible: keep the unified palette and technique as the base, but add the characteristic approach of ' + work.artist.name + '.');
+    P.push('');
+  }
+  P.push('════════ ABSOLUTE RULES ════════');
+  P.push('- Hand-painted ARTWORK, not a photograph, not CGI, not 3D.');
+  P.push('- Vertical 9:16 composition.');
+  P.push('- NO text, NO watermark, NO signature.');
+  P.push('- FIGURES FULLY CLOTHED. No nudity, no explicit content.');
+  P.push('- Cohesive with the unified style DNA.');
+  return P.join('\n');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER WORKS
+// ═══════════════════════════════════════════════════════════════
+function workCardHTML(work) {
+  let imgHtml;
+  if (work.imageUrl) imgHtml = '<img src="' + work.imageUrl + '" loading="lazy" alt="">';
+  else if (work.error) imgHtml = '<div class="err">✕ Échec<br><small>' + esc(trunc(work.error, 80)) + '</small><button class="mini-btn" data-retry="' + work.id + '">Réessayer</button></div>';
+  else imgHtml = '<div class="load"><span style="font-size:1.4rem">🎨</span>' + esc(work.title) + '<button class="mini-btn" data-gen="' + work.id + '">Générer</button></div>';
+
+  const statusBadge = work.imageUrl ? '<span class="pbadge gen">✓ Faite</span>' : (work.error ? '' : '<span class="pbadge" style="background:rgba(232,123,53,.1);color:#e87b35;border-color:#8b5a2b;">En attente</span>');
+  const artistBadge = work.artist ? '<span class="pbadge art">🎨 ' + esc(work.artist.name) + '</span>' : '';
+  const fullPrompt = buildImagePrompt(work);
+
+  return '<div class="photo-img">' + imgHtml + '</div>' +
+    '<div class="photo-meta">' +
+    '<div>' +
+    '<span class="pbadge cat">✦ ' + esc(work.category) + '</span>' +
+    artistBadge + statusBadge +
+    '</div>' +
+    '<div class="ptitle">' + esc(work.title) + '</div>' +
+    '<div class="pblock">' +
+    '<div class="plabel">📸 Prompt image</div>' +
+    '<button class="pcopy" data-copy="' + esc(fullPrompt) + '">Copier</button>' +
+    '<div class="ptext">' + esc(fullPrompt) + '</div>' +
+    '</div>' +
+    (work.imageUrl ? '<a class="popen" href="' + work.imageUrl + '" target="_blank" rel="noopener">Ouvrir</a>' : '') +
+    '</div>';
+}
+
+function attachCardHandlers(card) {
+  card.querySelectorAll('[data-copy]').forEach(b => {
+    b.onclick = (e) => {
+      e.stopPropagation();
+      const ta = document.createElement('textarea');
+      ta.value = b.dataset.copy;
+      ta.style.position = 'fixed'; ta.style.left = '-9999px';
+      document.body.appendChild(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (er) {}
+      document.body.removeChild(ta);
+      toast(ok ? 'Copié' : 'Copie impossible', ok ? 'success' : 'error', 1500);
+    };
+  });
+  card.querySelectorAll('[data-gen]').forEach(b => {
+    b.onclick = (e) => { e.stopPropagation(); generateOne(b.dataset.gen); };
+  });
+  card.querySelectorAll('[data-retry]').forEach(b => {
+    b.onclick = (e) => { e.stopPropagation(); const w = state.works.find(x => x.id === b.dataset.retry); if (w) { w.error = null; w.imageUrl = null; updateWorkCard(w); generateOne(w.id); } };
+  });
+}
+
+function renderWorksGrid() {
+  const grid = $('photoGrid');
+  grid.innerHTML = '';
+  state.workCards.clear();
+  state.works.forEach(work => {
+    const card = document.createElement('div');
+    card.className = 'photo ' + (work.imageUrl ? 'done' : (work.error ? 'error' : 'pending'));
+    card.dataset.wid = work.id;
+    card.innerHTML = workCardHTML(work);
+    grid.appendChild(card);
+    state.workCards.set(work.id, card);
+    attachCardHandlers(card);
+  });
+  updateCounts();
+}
+
+function updateWorkCard(work) {
+  const card = state.workCards.get(work.id);
+  if (!card) return;
+  card.className = 'photo ' + (work.imageUrl ? 'done' : (work.error ? 'error' : 'pending'));
+  card.innerHTML = workCardHTML(work);
+  attachCardHandlers(card);
+  updateCounts();
+}
+
+function updateCounts() {
+  const done = state.works.filter(w => w.imageUrl).length;
+  $('worksCount').textContent = state.works.length;
+  $('totalCount').textContent = done + ' / ' + state.works.length;
+  $('queueCount').textContent = state.isRunning ? (state.works.length - done) : '0';
+  $('resultsCount').textContent = state.works.length + ' œuvre' + (state.works.length > 1 ? 's' : '');
+  const pct = state.works.length > 0 ? Math.round((done / state.works.length) * 100) : 0;
+  const fill = $('progressFill');
+  fill.style.width = pct + '%';
+  fill.classList.toggle('done', pct >= 100);
+  updateButtons();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GÉNÉRATION
+// ═══════════════════════════════════════════════════════════════
+async function generateOne(workId) {
+  const work = state.works.find(w => w.id === workId);
+  if (!work) return;
+  if (work.imageUrl) { toast('Déjà générée', 'warn'); return; }
+  if (state.apiKeys.length === 0) { toast('Ajoutez une clé API', 'error'); return; }
+  if (!state.styleDNA) { toast('Analysez d\'abord les images', 'error'); return; }
+  const card = state.workCards.get(work.id);
+  if (card) card.classList.add('generating');
+  work.error = null;
+  try {
+    const url = await apiImage(buildImagePrompt(work));
+    work.imageUrl = url;
+    human('🎨 ' + work.title + ' ✓');
+    debug('✔ ' + work.title, 'ok');
+  } catch (e) {
+    if (e.message === 'Arrêt') return;
+    work.error = e.message;
+    human('✘ ' + work.title + ' · ' + e.message);
+    debug('✘ ' + work.title + ' · ' + e.message, 'err');
+  }
+  updateWorkCard(work);
+}
+
+async function generateAllPending() {
+  if (state.isRunning) return;
+  if (!state.styleDNA) { toast('Analysez d\'abord les images', 'error'); return; }
+  if (state.apiKeys.length === 0) { toast('Ajoutez une clé API', 'error'); return; }
+  const pending = state.works.filter(w => !w.imageUrl);
+  if (pending.length === 0) { toast('Toutes les œuvres sont générées', 'warn'); return; }
+  state.isRunning = true;
+  state.stopRequested = false;
+  state.keyIndex = 0;
+  updateButtons();
+  human('✦ Génération de ' + pending.length + ' œuvre(s)…');
+  debug('Génération ' + pending.length + ' œuvres · clés=' + state.apiKeys.length, 'api');
+  setStatus('Génération en cours…');
+  const nKeys = state.apiKeys.length;
+  const lastStartPerKey = {};
+  let idx = 0;
+  async function worker(slot) {
+    while (!state.stopRequested && idx < pending.length) {
+      const myIdx = idx++;
+      const work = pending[myIdx];
+      if (!work) return;
+      const keySlot = slot % nKeys;
+      const now = Date.now();
+      const wait = Math.max(0, (lastStartPerKey[keySlot] || 0) + DELAY_PER_KEY_MS - now);
+      lastStartPerKey[keySlot] = Date.now() + wait;
+      if (wait > 0) await sleep(wait);
+      if (state.stopRequested) return;
+      const card = state.workCards.get(work.id);
+      if (card) card.classList.add('generating');
+      work.error = null;
+      try {
+        work.imageUrl = await apiImage(buildImagePrompt(work));
+        human('🎨 ' + work.title + ' ✓');
+        debug('✔ ' + work.title, 'ok');
+      } catch (e) {
+        if (e.message === 'Arrêt') return;
+        work.error = e.message;
+        debug('✘ ' + work.title + ' · ' + e.message, 'err');
+      }
+      updateWorkCard(work);
+    }
+  }
+  await Promise.all(Array.from({ length: nKeys }, (_, i) => worker(i)));
+  state.isRunning = false;
+  state.stopRequested = false;
+  setStatus(null);
+  updateButtons();
+  const done = state.works.filter(w => w.imageUrl).length;
+  toast(done + ' / ' + state.works.length + ' œuvre(s) générée(s)', 'success', 3500);
+}
+
+async function generateInitial40() {
+  if (state.works.length > 0) { toast('Utilisez "Continuer" pour ajouter 40 œuvres', 'warn'); return; }
+  const batch = buildInitialWorks();
+  if (state.mixArtists) assignArtists(batch);
+  state.works = batch;
+  renderWorksGrid();
+  human('✦ 40 œuvres initiales créées');
+  await generateAllPending();
+}
+
+async function continueGeneration() {
+  if (state.isRunning) return;
+  if (!state.styleDNA) { toast('Analysez d\'abord les images', 'error'); return; }
+  if (state.apiKeys.length === 0) { toast('Ajoutez une clé API', 'error'); return; }
+  const batch = generateMoreCombinations(40);
+  if (batch.length === 0) { toast('Impossible de trouver de nouvelles combinaisons', 'warn'); return; }
+  if (state.mixArtists) assignArtists(batch);
+  state.works.push(...batch);
+  renderWorksGrid();
+  human('✦ +' + batch.length + ' nouvelles combinaisons · total ' + state.works.length);
+  await generateAllPending();
+}
+
+function stopGeneration() {
+  if (!state.isRunning) return;
+  state.stopRequested = true;
+  human('⏹ Arrêt demandé…');
+}
+
+function resetAll() {
+  if (!confirm('Réinitialiser toutes les œuvres et analyses ?')) return;
+  state.works = [];
+  state.usedKeys = new Set();
+  state.workCards.clear();
+  storageDel(WORKS_STORAGE);
+  renderWorksGrid();
+  toast('Réinitialisé', 'warn');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UPDATE BUTTONS
+// ═══════════════════════════════════════════════════════════════
+function updateButtons() {
+  const hasKey = state.apiKeys.length > 0;
+  const loaded = state.images.filter(x => x).length;
+  const hasDNA = !!state.styleDNA;
+  $('analyzeBtn').disabled = !hasKey || loaded < 1 || state.isRunning;
+  $('genBtn').disabled = !hasKey || !hasDNA || state.works.length > 0 || state.isRunning;
+  $('continueBtn').disabled = !hasKey || !hasDNA || state.works.length === 0 || state.isRunning;
+  $('stopBtn').disabled = !state.isRunning;
+  if (state.isRunning) {
+    $('genBtn').textContent = 'Génération…';
+    $('continueBtn').textContent = 'Génération…';
+  } else {
+    $('genBtn').textContent = state.works.length === 0 ? '✦ Générer 40 œuvres' : '✦ Générées';
+    $('continueBtn').textContent = '＋ Continuer (+40)';
+  }
+  const info = $('controlInfo');
+  if (!hasKey) info.innerHTML = 'Ajoutez au moins une clé API Agnes.';
+  else if (loaded < 4) info.innerHTML = '<span class="sel">' + loaded + ' / 4</span> image(s) chargée(s). Chargez 4 images pour une analyse optimale.';
+  else if (!hasDNA) info.innerHTML = '<span class="sel">4 / 4</span> images chargées. Cliquez sur <strong>Analyser</strong> pour extraire le Style DNA.';
+  else {
+    const done = state.works.filter(w => w.imageUrl).length;
+    info.innerHTML = '<span class="sel">' + state.works.length + '</span> œuvres · <span class="sel">' + done + '</span> générées · <span class="sel">' + (state.works.length - done) + '</span> en attente.';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BIND
+// ═══════════════════════════════════════════════════════════════
+function bind() {
+  $('validateBtn').onclick = validateAndSaveKeys;
+  $('clearKeysBtn').onclick = () => {
+    $('keysInput').value = '';
+    state.apiKeys = [];
+    storageDel(KEYS_STORAGE);
+    $('keyStatus').className = 'status';
+    $('keyStatusText').textContent = 'Aucune clé enregistrée';
+    $('keyBadge').textContent = '0 validée';
+    updateButtons();
+    toast('Clés effacées', 'warn');
+  };
+  $('analyzeBtn').onclick = analyzeAll;
+  $('reAnalyzeBtn').onclick = analyzeAll;
+  $('mixArtistsToggle').onchange = (e) => {
+    state.mixArtists = e.target.checked;
+    toast(state.mixArtists ? 'Mode mélange artistes activé' : 'Mode mélange désactivé', 'success', 1500);
+  };
+  $('genBtn').onclick = generateInitial40;
+  $('continueBtn').onclick = continueGeneration;
+  $('stopBtn').onclick = stopGeneration;
+  $('resetBtn').onclick = resetAll;
+
+  const handle = $('panelHandle');
+  const content = $('panelContent');
+  const toggle = $('panelToggle');
+  let open = false;
+  handle.onclick = (e) => {
+    if (e.target.tagName === 'BUTTON') return;
+    open = !open;
+    content.classList.toggle('hidden', !open);
+    toggle.textContent = (open ? '▲' : '▼') + ' CONSOLE';
+  };
+  $('copyConsoleBtn').onclick = (e) => {
+    e.stopPropagation();
+    const txt = state.debugLog.map(d => d.t + ' ' + d.m + (d.raw ? '\n' + d.raw : '')).join('\n');
+    const ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (er) {}
+    document.body.removeChild(ta);
+    toast(ok ? 'Console copiée' : 'Copie impossible', ok ? 'success' : 'error', 1500);
+  };
+  $('clearConsoleBtn').onclick = (e) => {
+    e.stopPropagation();
+    state.debugLog = [];
+    renderDebug();
+    toast('Console effacée', 'warn', 1200);
+  };
+
+  // Restore
+  try {
+    const saved = JSON.parse(storageGet(KEYS_STORAGE) || '[]');
+    if (Array.isArray(saved) && saved.length > 0) {
+      state.apiKeys = saved.filter(isValidKey);
+      $('keysInput').value = saved.join('\n');
+      if (state.apiKeys.length > 0) {
+        $('keyStatus').className = 'status ok';
+        $('keyStatusText').textContent = state.apiKeys.length + ' clé(s) restaurée(s)';
+        $('keyBadge').textContent = state.apiKeys.length + ' validée' + (state.apiKeys.length > 1 ? 's' : '');
+        $('rpmInfo').textContent = 'RPM cap ≈ ' + (state.apiKeys.length * 12);
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const refsRaw = storageGet(REFS_STORAGE);
+    if (refsRaw) {
+      const d = JSON.parse(refsRaw);
+      if (d && Array.isArray(d.images)) {
+        state.images = d.images.slice(0, 4);
+        state.imageNames = (d.names || ['', '', '', '']).slice(0, 4);
+        human('📷 ' + state.images.filter(x => x).length + ' image(s) restaurée(s)');
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const analysisRaw = storageGet(ANALYSIS_STORAGE);
+    if (analysisRaw) {
+      const d = JSON.parse(analysisRaw);
+      if (d && d.styleDNA) {
+        state.styleDNA = d.styleDNA;
+        state.analyses = d.analyses || [null, null, null, null];
+        state.copyPrompts = (state.analyses.filter(a => a) || []).map(a => a.copy_prompt);
+        renderAnalysisUI();
+        $('analyzeStatus').className = 'status ok';
+        $('analyzeStatusText').textContent = 'Style DNA restauré';
+        human('🧠 Style DNA restauré');
+      }
+    }
+  } catch (e) {}
+
+  try {
+    const worksRaw = storageGet(WORKS_STORAGE);
+    if (worksRaw) {
+      const w = JSON.parse(worksRaw);
+      if (Array.isArray(w) && w.length > 0 && w[0].id) {
+        state.works = w;
+        // Reconstruire usedKeys
+        state.works.forEach(x => { if (x.key) state.usedKeys.add(x.key); });
+        human('✦ ' + state.works.length + ' œuvre(s) restaurée(s)');
+      }
+    }
+  } catch (e) {}
+
+  setInterval(() => {
+    try {
+      storageSet(WORKS_STORAGE, JSON.stringify(state.works));
+      storageSet(ANALYSIS_STORAGE, JSON.stringify({ styleDNA: state.styleDNA, analyses: state.analyses }));
+    } catch (e) {}
+  }, 4000);
+
+  refreshSlots();
+  renderWorksGrid();
+  updateButtons();
+
+  human('✦ Egon Multi-Ref Lab prêt · 4 images → 40 œuvres → Continuer (+40)');
+  debug('Egon Multi-Ref Lab v1 · modèle=' + MODEL_IMAGE + ' · size=' + IMAGE_SIZE, 'api');
+  debug('40 artistes célèbres disponibles · option mélange désactivée par défaut', 'api');
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+else bind();
+</script>
+</body>
+</html>
